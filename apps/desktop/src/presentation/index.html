@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoseGuard Lite</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PoseGuard Lite</h1>
+            <div id="status-indicator" class="status-dot"></div>
+        </header>
+
+        <main>
+            <div class="video-container">
+                <video id="webcam" playsinline></video>
+                <canvas id="output_canvas"></canvas>
+            </div>
+
+            <div class="controls">
+                <button id="btn-start">Start Monitoring</button>
+                <button id="btn-stop" disabled>Stop</button>
+                <button id="btn-calibrate" disabled>Set Baseline</button>
+            </div>
+
+            <section class="settings">
+                <h3>Settings</h3>
+                <div class="setting-group">
+                    <label>Video Opacity: <span id="label-opacity">0%</span></label>
+                    <input type="range" id="input-opacity" min="0" max="100" value="0">
+                </div>
+                <div class="setting-group">
+                    <label>Overall Sensitivity: <span id="label-sens">50</span></label>
+                    <input type="range" id="input-sens" min="0" max="100" step="1" value="50">
+                </div>
+            </section>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="label">Status:</span>
+                    <span id="status-text">Ready</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Turtle Neck:</span>
+                    <span id="val-turtle">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Slouching:</span>
+                    <span id="val-slouch">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Text Neck:</span>
+                    <span id="val-text">--</span>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script type="module" src="view.js"></script>
+</body>
+</html>

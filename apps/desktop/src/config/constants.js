@@ -1,0 +1,12 @@
+export const DEFAULT_THRESHOLDS = {
+    TURTLE_NECK: 1.3,
+    SLOUCHING: 0.8,
+    TEXT_NECK: 0.05
+};
+
+export let POSTURE_THRESHOLDS = { ...DEFAULT_THRESHOLDS };
+
+export const MONITORING_CONFIG = {
+    DEBOUNCE_TIME: 2000,
+    FRAME_INTERVAL: 100
+};
