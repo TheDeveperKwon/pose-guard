@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 
 type Metrics = {
   turtle: boolean;
@@ -234,6 +235,7 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
 
       await ensurePose();
       setRunning(true);
+      trackEvent("demo_start", { locale });
       rafRef.current = requestAnimationFrame(() => {
         void tick();
       });
@@ -264,6 +266,7 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
   function setBaseline() {
     if (!running) return;
     baselineRequestedRef.current = true;
+    trackEvent("demo_baseline_set", { locale });
   }
 
   useEffect(() => stop, []);

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
+import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
 
 const RELEASE_BASE = "https://github.com/your-org/pose-guard/releases/latest";
 
@@ -13,14 +14,12 @@ export default function DownloadPage({ params }: { params: { locale: string } })
       <section className="section">
         <h1>{copy.pages.download.title}</h1>
         <p className="muted">{copy.pages.download.body}</p>
-        <div className="cta-row">
-          <a className="btn btn-primary" href={RELEASE_BASE} target="_blank" rel="noreferrer">
-            {copy.pages.download.mac}
-          </a>
-          <a className="btn" href={RELEASE_BASE} target="_blank" rel="noreferrer">
-            {copy.pages.download.win}
-          </a>
-        </div>
+        <DownloadButtons
+          releaseUrl={RELEASE_BASE}
+          macLabel={copy.pages.download.mac}
+          winLabel={copy.pages.download.win}
+          locale={locale}
+        />
       </section>
     </main>
   );
