@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
 
-const RELEASE_BASE = "https://github.com/your-org/pose-guard/releases/latest";
+const RELEASE_BASE = "https://github.com/TheDeveperKwon/pose-guard/releases/latest";
 
 export default function DownloadPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
