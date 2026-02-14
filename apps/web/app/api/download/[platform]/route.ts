@@ -3,6 +3,13 @@ import { NextResponse } from "next/server";
 const OWNER = "TheDeveperKwon";
 const REPO = "pose-guard";
 const RELEASE_PAGE = `https://github.com/${OWNER}/${REPO}/releases/latest`;
+const DIRECT_ASSET = {
+  mac: `https://github.com/${OWNER}/${REPO}/releases/latest/download/PoseGuard-Lite-mac-arm64.dmg`,
+  win: `https://github.com/${OWNER}/${REPO}/releases/latest/download/PoseGuard-Lite-win-x64.exe`
+} as const;
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type Platform = "mac" | "win";
 
@@ -33,19 +40,24 @@ export async function GET(
   }
 
   try {
+    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
     const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`, {
-      headers: { Accept: "application/vnd.github+json" },
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": "pose-guard-download-proxy",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
       cache: "no-store"
     });
 
-    if (!res.ok) return NextResponse.redirect(RELEASE_PAGE, { status: 302 });
+    if (!res.ok) return NextResponse.redirect(DIRECT_ASSET[platform], { status: 302 });
 
     const data = await res.json();
     const assets = Array.isArray(data?.assets) ? data.assets : [];
     const assetUrl = pickAssetUrl(platform, assets);
 
-    return NextResponse.redirect(assetUrl ?? RELEASE_PAGE, { status: 302 });
+    return NextResponse.redirect(assetUrl ?? DIRECT_ASSET[platform], { status: 302 });
   } catch {
-    return NextResponse.redirect(RELEASE_PAGE, { status: 302 });
+    return NextResponse.redirect(DIRECT_ASSET[platform], { status: 302 });
   }
 }
