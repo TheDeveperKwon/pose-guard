@@ -3,20 +3,19 @@
 import { trackEvent } from "@/lib/analytics";
 
 type Props = {
-  releaseUrl: string;
+  macUrl: string;
+  winUrl: string;
   macLabel: string;
   winLabel: string;
   locale: string;
 };
 
-export function DownloadButtons({ releaseUrl, macLabel, winLabel, locale }: Props) {
+export function DownloadButtons({ macUrl, winUrl, macLabel, winLabel, locale }: Props) {
   return (
     <div className="cta-row">
       <a
         className="btn btn-primary"
-        href={releaseUrl}
-        target="_blank"
-        rel="noreferrer"
+        href={macUrl}
         onClick={() => {
           trackEvent("download_click", { platform: "macos", locale });
         }}
@@ -25,9 +24,7 @@ export function DownloadButtons({ releaseUrl, macLabel, winLabel, locale }: Prop
       </a>
       <a
         className="btn"
-        href={releaseUrl}
-        target="_blank"
-        rel="noreferrer"
+        href={winUrl}
         onClick={() => {
           trackEvent("download_click", { platform: "windows", locale });
         }}
