@@ -126,6 +126,19 @@ canvas {
     width: 100%;
 }
 
+.setting-group select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #1f1f1f;
+    color: var(--text-color);
+}
+
+.setting-group button {
+    width: 100%;
+}
+
 .controls {
     display: flex;
     gap: 10px;

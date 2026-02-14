@@ -10,3 +10,10 @@ export const MONITORING_CONFIG = {
     DEBOUNCE_TIME: 2000,
     FRAME_INTERVAL: 200
 };
+
+export const SOUND_CONFIG = {
+    MODE: "webaudio",
+    VOLUME: 60,
+    COOLDOWN_MS: 1500,
+    ESCALATE_AFTER_MS: 8000
+};

@@ -3,6 +3,7 @@ import { MediaPipeAdapter } from '../infrastructure/MediaPipeAdapter.js';
 import { CameraAdapter } from '../infrastructure/CameraAdapter.js';
 import { AudioAdapter } from '../infrastructure/AudioAdapter.js';
 import { Evaluator } from '../domain/Evaluator.js';
+import { SOUND_CONFIG } from '../config/constants.js';
 
 // DOM Elements
 const videoElement = document.getElementById('webcam');
@@ -25,11 +26,17 @@ const labelOpacity = document.getElementById('label-opacity');
 const inputSens = document.getElementById('input-sens');
 const labelSens = document.getElementById('label-sens');
 const inputPowerSave = document.getElementById('input-power-save');
+const inputVolume = document.getElementById('input-volume');
+const labelVolume = document.getElementById('label-volume');
 
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
 const mediaPipeAdapter = new MediaPipeAdapter();
-const audioAdapter = new AudioAdapter('./assets/alert.mp3');
+const audioAdapter = new AudioAdapter('./assets/alert.mp3', {
+    mode: "webaudio",
+    volume: SOUND_CONFIG.VOLUME / 100,
+    cooldownMs: SOUND_CONFIG.COOLDOWN_MS
+});
 const evaluator = new Evaluator(null);
 
 // View Object
@@ -149,6 +156,13 @@ inputPowerSave.addEventListener('change', (e) => {
     setPowerSaving(e.target.checked);
 });
 
+inputVolume.addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    labelVolume.textContent = `${val}%`;
+    audioAdapter.setVolume(val / 100);
+});
+
+
 // Handle window resize if needed
 window.addEventListener('resize', () => {
     if (videoElement.videoWidth) {
@@ -156,3 +170,7 @@ window.addEventListener('resize', () => {
         canvasElement.height = videoElement.videoHeight;
     }
 });
+
+// Initialize sound UI defaults
+inputVolume.value = SOUND_CONFIG.VOLUME;
+labelVolume.textContent = `${SOUND_CONFIG.VOLUME}%`;
