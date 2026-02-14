@@ -3,9 +3,9 @@ import { Locale, getCopy, isLocale } from "@/lib/i18n";
 import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
 
 const MAC_DOWNLOAD_URL =
-  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-mac-arm64-dmg.dmg";
+  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-mac-arm64.dmg";
 const WIN_DOWNLOAD_URL =
-  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-win-x64-nsis.exe";
+  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-win-x64.exe";
 
 export default function DownloadPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();

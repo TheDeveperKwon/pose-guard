@@ -28,7 +28,7 @@
   "build": {
     "appId": "com.poseguard.lite",
     "productName": "PoseGuard Lite",
-    "artifactName": "PoseGuard-Lite-${os}-${arch}-${target}.${ext}",
+    "artifactName": "PoseGuard-Lite-${os}-${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
