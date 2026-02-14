@@ -9,7 +9,7 @@ Electron + MediaPipe Pose 기반의 자세 모니터링 데스크톱 앱입니�
 - 기준 자세(Baseline) 캡처 후 상대 변화 기반 판정
 - 자세 경고 상태가 일정 시간(기본 2초) 지속될 때만 알림음 재생(디바운스)
 - 민감도(0~100), 비디오 투명도 조절
-- 트레이 상주(창 닫기 시 종료 대신 숨김)
+- 창 닫기 시 앱 종료
 
 ## 기술 스택
 
@@ -58,6 +58,15 @@ npm install
 npm start
 ```
 
+## 빌드
+
+```bash
+cd apps/desktop
+npm install
+npm run build   # 폴더 형태로 빌드
+npm run dist    # DMG/ZIP 생성
+```
+
 ## 사용 방법
 
 1. `Start Monitoring` 클릭
@@ -93,18 +102,30 @@ npm start
   - `TEXT_NECK: 0.05`
 - `MONITORING_CONFIG`
   - `DEBOUNCE_TIME: 2000` (ms)
-  - `FRAME_INTERVAL: 100` (ms)
+  - `FRAME_INTERVAL: 200` (ms)
 
 ## 동작 특성 및 주의사항
 
 - Baseline을 설정하지 않으면 기본적으로 `NORMAL` 상태로 처리됩니다.
 - BAD 상태가 `DEBOUNCE_TIME` 이상 지속되면 알림음이 재생됩니다.
-- 창 닫기 버튼은 앱 종료가 아니라 트레이로 숨김 처리됩니다.
+- 창 닫기 버튼을 누르면 앱이 종료됩니다.
 - MediaPipe 관련 스크립트를 CDN으로 불러오므로 오프라인 환경에서는 동작이 제한될 수 있습니다.
+
+## 릴리즈 파이프라인
+
+GitHub Actions에서 태그(`v*`) 푸시 시 macOS/Windows 빌드를 수행하고
+GitHub Releases에 업로드하도록 설정되어 있습니다.
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+로컬 빌드는 `--publish never`로 실행되며, 업로드는 CI에서만 수행됩니다.
 
 ## 개선 아이디어
 
 - 설정값(민감도/임계값) 영구 저장
 - 알림음 재생 쿨다운(반복 알림 간격) 옵션 추가
-- electron-builder 설정 추가 후 배포 패키지 자동화
+- 릴리즈 자동화 고도화(릴리즈 노트/다운로드 링크 자동 반영)
 - 테스트 코드 및 에러 처리 강화
