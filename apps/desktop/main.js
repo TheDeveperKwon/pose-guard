@@ -23,13 +23,9 @@ function createWindow() {
         mainWindow.show();
     });
 
-    // Minimize to tray instead of closing
-    mainWindow.on('close', (event) => {
-        if (!app.isQuitting) {
-            event.preventDefault();
-            mainWindow.hide();
-        }
-        return false;
+    // Close the app when the window is closed
+    mainWindow.on('close', () => {
+        app.quit();
     });
 }
 
@@ -50,16 +46,13 @@ function createTray() {
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Show App', click: () => mainWindow.show() },
         { type: 'separator' },
-        { label: 'Quit', click: () => {
-            app.isQuitting = true;
-            app.quit();
-        }}
+        { label: 'Quit', click: () => app.quit() }
     ]);
 
     tray.setContextMenu(contextMenu);
     
     tray.on('click', () => {
-        mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+        mainWindow.show();
     });
 }
 
