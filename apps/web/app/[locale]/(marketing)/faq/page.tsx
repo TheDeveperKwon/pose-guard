@@ -11,7 +11,7 @@ export default function FaqPage({ params }: { params: { locale: string } }) {
       ? [
           {
             q: "웹캠 영상이 서버로 전송되나요?",
-            a: "아니요. 데모 분석은 브라우저 내에서 처리됩니다."
+            a: "아니요. 분석은 브라우저 내에서 처리됩니다."
           },
           {
             q: "데모가 느릴 때는 어떻게 하나요?",
@@ -25,7 +25,7 @@ export default function FaqPage({ params }: { params: { locale: string } }) {
       : [
           {
             q: "Are webcam frames uploaded to servers?",
-            a: "No. Demo analysis is performed in-browser."
+            a: "No. Analysis is performed in-browser."
           },
           {
             q: "What if the demo feels slow?",
