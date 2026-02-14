@@ -18,8 +18,6 @@ export function SiteHeader({ locale }: Props) {
         <Link href={`/${locale}/download`}>{copy.nav.download}</Link>
         <Link href={`/${locale}/how-it-works`}>{copy.nav.howItWorks}</Link>
         <Link href={`/${locale}/faq`}>{copy.nav.faq}</Link>
-        <Link href={`/${locale}/qna`}>{copy.nav.qna}</Link>
-        <Link href={`/${locale}/sponsor`}>{copy.nav.sponsor}</Link>
         <Link href={`/${altLocale}`} className="locale-switch">
           {altLocale.toUpperCase()}
         </Link>
