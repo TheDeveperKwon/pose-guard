@@ -13,9 +13,10 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow: auto;
+    padding: 16px 0;
 }
 
 .container {
@@ -26,6 +27,8 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     text-align: center;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
 }
 
 header {
