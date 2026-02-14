@@ -24,6 +24,7 @@ const inputOpacity = document.getElementById('input-opacity');
 const labelOpacity = document.getElementById('label-opacity');
 const inputSens = document.getElementById('input-sens');
 const labelSens = document.getElementById('label-sens');
+const inputPowerSave = document.getElementById('input-power-save');
 
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
@@ -41,24 +42,25 @@ const view = {
     },
 
     render: (posture, evaluation) => {
-        // Smart Rendering: Skip drawing if window is hidden
-        if (document.hidden) return;
+        const shouldDraw = !document.hidden && !isPowerSaving;
 
-        // Draw on canvas
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        
-        // Only draw if we have landmarks
-        if (posture.landmarks) {
-            // Check if global drawing utils are available
-            if (window.drawConnectors && window.drawLandmarks) {
-                window.drawConnectors(canvasCtx, posture.landmarks, window.POSE_CONNECTIONS,
-                    { color: '#00FF00', lineWidth: 2 });
-                window.drawLandmarks(canvasCtx, posture.landmarks,
-                    { color: '#FF0000', lineWidth: 1, radius: 3 });
+        if (shouldDraw) {
+            // Draw on canvas
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            
+            // Only draw if we have landmarks
+            if (posture.landmarks) {
+                // Check if global drawing utils are available
+                if (window.drawConnectors && window.drawLandmarks) {
+                    window.drawConnectors(canvasCtx, posture.landmarks, window.POSE_CONNECTIONS,
+                        { color: '#00FF00', lineWidth: 2 });
+                    window.drawLandmarks(canvasCtx, posture.landmarks,
+                        { color: '#FF0000', lineWidth: 1, radius: 3 });
+                }
             }
+            canvasCtx.restore();
         }
-        canvasCtx.restore();
 
         // Update Stats
         if (evaluation.results) {
@@ -83,6 +85,25 @@ function updateStatItem(element, isBad) {
 const monitorService = new MonitorService(
     cameraAdapter, mediaPipeAdapter, audioAdapter, evaluator, view
 );
+
+let isPowerSaving = false;
+
+function setPowerSaving(enabled) {
+    isPowerSaving = enabled;
+    document.body.classList.toggle('power-saving', enabled);
+
+    if (enabled) {
+        videoElement.style.opacity = 0;
+        inputOpacity.disabled = true;
+        labelOpacity.textContent = "Disabled";
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    } else {
+        inputOpacity.disabled = false;
+        const val = inputOpacity.value;
+        videoElement.style.opacity = val / 100;
+        labelOpacity.textContent = `${val}%`;
+    }
+}
 
 // Event Listeners
 btnStart.addEventListener('click', async () => {
@@ -112,6 +133,7 @@ btnCalibrate.addEventListener('click', () => {
 
 // Settings Events
 inputOpacity.addEventListener('input', (e) => {
+    if (isPowerSaving) return;
     const val = e.target.value;
     videoElement.style.opacity = val / 100;
     labelOpacity.textContent = `${val}%`;
@@ -121,6 +143,10 @@ inputSens.addEventListener('input', (e) => {
     const val = parseInt(e.target.value);
     labelSens.textContent = val;
     evaluator.setSensitivity(val);
+});
+
+inputPowerSave.addEventListener('change', (e) => {
+    setPowerSaving(e.target.checked);
 });
 
 // Handle window resize if needed

@@ -75,6 +75,15 @@ canvas {
     z-index: 10;
 }
 
+.power-saving .video-container {
+    background-color: #111;
+}
+
+.power-saving #webcam,
+.power-saving #output_canvas {
+    display: none;
+}
+
 .settings {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
@@ -93,10 +102,21 @@ canvas {
     margin-bottom: 12px;
 }
 
+.setting-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .setting-group label {
     display: block;
     font-size: 0.85rem;
     margin-bottom: 5px;
+}
+
+.setting-inline label {
+    margin-bottom: 0;
 }
 
 .setting-group input[type="range"] {
