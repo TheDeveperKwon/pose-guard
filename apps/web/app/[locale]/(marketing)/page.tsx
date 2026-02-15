@@ -47,6 +47,18 @@ export default function LandingPage({ params }: { params: { locale: string } }) 
       </section>
 
       <section className="section">
+        <h2>{copy.sections.usageTitle}</h2>
+        <div className="feature-grid">
+          {copy.sections.usageSteps.map((step) => (
+            <article className="feature-card" key={step.title}>
+              <h3>{step.title}</h3>
+              <p className="muted">{step.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section">
         <h2>{copy.sections.privacyTitle}</h2>
         <p className="muted">{copy.sections.privacyBody}</p>
       </section>

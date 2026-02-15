@@ -28,6 +28,8 @@ type Copy = {
     whyBody: string;
     featuresTitle: string;
     features: Array<{ title: string; body: string }>;
+    usageTitle: string;
+    usageSteps: Array<{ title: string; body: string }>;
     privacyTitle: string;
     privacyBody: string;
   };
@@ -66,7 +68,7 @@ const ko: Copy = {
   sections: {
     whyTitle: "왜 PoseGuard인가",
     whyBody:
-      "프레임 처리 간격을 제어해 불필요한 연산을 줄이고, 경고는 디바운스로 억제해 조용하지만 확실하게 동작합니다.",
+      "우리는 바른 자세를 의지가 아니라 시스템으로 만들고 싶었습니다. PoseGuard는 자세가 무너지는 순간을 AI로 포착해 조용하고 빠르게 알려줍니다. 그 한 번의 알림이 쌓여, 결국 건강한 습관이 됩니다.",
     featuresTitle: "핵심 기능",
     features: [
       {
@@ -80,6 +82,21 @@ const ko: Copy = {
       {
         title: "저소음 경고 설계",
         body: "나쁜 자세가 일정 시간 유지될 때만 알림."
+      }
+    ],
+    usageTitle: "프로그램 사용 방법",
+    usageSteps: [
+      {
+        title: "1. 앱 실행 후 모니터링 시작",
+        body: "Start Monitoring 버튼을 눌러 웹캠 기반 자세 추적을 시작합니다."
+      },
+      {
+        title: "2. 기준 자세 설정",
+        body: "자세를 바르게 한 상태에서 Set Baseline을 눌러 개인 기준을 저장합니다."
+      },
+      {
+        title: "3. 경고 확인 및 민감도 조정",
+        body: "거북목/구부정/텍스트넥 지표를 확인하고 민감도와 볼륨을 조절합니다."
       }
     ],
     privacyTitle: "프라이버시 우선",
@@ -141,7 +158,7 @@ const en: Copy = {
   sections: {
     whyTitle: "Why PoseGuard",
     whyBody:
-      "A throttled processing loop reduces unnecessary compute, while debounce logic avoids noisy alerts.",
+      "We believe good posture should be a system, not just willpower. PoseGuard catches posture breakdown the moment it happens and gives a quiet, immediate alert. Those small moments add up to lasting healthy habits.",
     featuresTitle: "Core Features",
     features: [
       {
@@ -155,6 +172,21 @@ const en: Copy = {
       {
         title: "Quiet alert behavior",
         body: "Warn only after bad posture persists for a configured duration."
+      }
+    ],
+    usageTitle: "How to use the app",
+    usageSteps: [
+      {
+        title: "1. Start monitoring",
+        body: "Click Start Monitoring to begin webcam-based posture tracking."
+      },
+      {
+        title: "2. Set your baseline",
+        body: "Sit upright and click Set Baseline to store your personal reference posture."
+      },
+      {
+        title: "3. Tune and monitor alerts",
+        body: "Watch turtle/slouch/text-neck indicators and adjust sensitivity and volume."
       }
     ],
     privacyTitle: "Privacy first",
