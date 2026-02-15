@@ -17,3 +17,15 @@ export const DOWNLOAD_META = {
   winFileName,
   releaseNotesUrl: "https://github.com/TheDeveperKwon/pose-guard/releases/latest"
 } as const;
+
+export const CHANGELOG_ENTRIES = [
+  {
+    version: DOWNLOAD_META.version,
+    date: DOWNLOAD_META.releasedAt,
+    items: [
+      "Initial bilingual landing structure (KR/EN)",
+      "Webcam demo with MediaPipe Pose integration",
+      "Download, how-it-works, FAQ, and privacy pages"
+    ]
+  }
+] as const;

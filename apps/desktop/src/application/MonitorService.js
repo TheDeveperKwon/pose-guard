@@ -79,10 +79,12 @@ export class MonitorService {
         const currentPosture = new Posture(landmarks);
 
         if (this.shouldCaptureBaseline) {
-            this.evaluator.updateBaseline(currentPosture);
+            const updated = this.evaluator.updateBaseline(currentPosture);
             this.shouldCaptureBaseline = false;
-            this.view.updateStatus("Baseline Set", "blue");
-            console.log("Baseline set:", currentPosture);
+            this.view.updateStatus(
+                updated ? "Baseline Set" : "Baseline Invalid",
+                updated ? "blue" : "red"
+            );
         }
 
         const evaluation = this.evaluator.evaluate(currentPosture);

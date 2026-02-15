@@ -1,5 +1,9 @@
 import { DEFAULT_THRESHOLDS } from '../config/constants.js';
 
+function isFiniteNumber(value) {
+    return typeof value === "number" && Number.isFinite(value);
+}
+
 export class Evaluator {
     constructor(baselinePosture) {
         this.baseline = baselinePosture;
@@ -7,11 +11,18 @@ export class Evaluator {
     }
 
     updateBaseline(posture) {
-        this.baseline = {
-            zoom: posture.getEyeDistance(),
-            height: posture.getTorsoHeight(),
-            pitch: posture.getNoseEarYDiff()
-        };
+        if (!posture || typeof posture !== "object") return false;
+
+        const zoom = posture.getEyeDistance();
+        const height = posture.getTorsoHeight();
+        const pitch = posture.getNoseEarYDiff();
+
+        if (!isFiniteNumber(zoom) || !isFiniteNumber(height) || !isFiniteNumber(pitch)) {
+            return false;
+        }
+
+        this.baseline = { zoom, height, pitch };
+        return true;
     }
 
     setSensitivity(value) {
@@ -25,6 +36,17 @@ export class Evaluator {
         const currentZoom = currentPosture.getEyeDistance();
         const currentHeight = currentPosture.getTorsoHeight();
         const currentPitch = currentPosture.getNoseEarYDiff();
+        if (
+            !isFiniteNumber(this.baseline.zoom) ||
+            !isFiniteNumber(this.baseline.height) ||
+            !isFiniteNumber(this.baseline.pitch) ||
+            !isFiniteNumber(currentZoom) ||
+            !isFiniteNumber(currentHeight) ||
+            !isFiniteNumber(currentPitch) ||
+            this.baseline.height === 0
+        ) {
+            return { status: 'NORMAL', results: {} };
+        }
 
         // 2. 변화율 계산
         const zoomRatio = currentZoom / this.baseline.zoom;

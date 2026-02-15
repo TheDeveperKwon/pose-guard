@@ -4,8 +4,6 @@ export const DEFAULT_THRESHOLDS = {
     TEXT_NECK: 0.05
 };
 
-export let POSTURE_THRESHOLDS = { ...DEFAULT_THRESHOLDS };
-
 export const MONITORING_CONFIG = {
     DEBOUNCE_TIME: 2000,
     FRAME_INTERVAL: 200

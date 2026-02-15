@@ -16,6 +16,13 @@ type Baseline = {
   pitch: number;
 };
 
+type PoseLandmark = {
+  x: number;
+  y: number;
+};
+
+type PoseLandmarks = Record<number, PoseLandmark>;
+
 const DEFAULT_THRESHOLDS = {
   TURTLE_NECK: 1.3,
   SLOUCHING: 0.8,
@@ -23,6 +30,7 @@ const DEFAULT_THRESHOLDS = {
 };
 
 const FRAME_INTERVAL = 100;
+const REQUIRED_LANDMARK_INDICES = [0, 2, 5, 7, 8, 11, 12] as const;
 
 export function WebcamDemo({ locale }: { locale: Locale }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -83,36 +91,75 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
     [locale]
   );
 
-  function getEyeDistance(landmarks: any[]) {
-    const leftEye = landmarks[2];
-    const rightEye = landmarks[5];
+  function isFiniteNumber(value: unknown): value is number {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+
+  function getLandmark(landmarks: unknown[], index: number): PoseLandmark | null {
+    const point = landmarks[index];
+    if (!point || typeof point !== "object") return null;
+    const candidate = point as { x?: unknown; y?: unknown };
+    if (!isFiniteNumber(candidate.x) || !isFiniteNumber(candidate.y)) return null;
+    return { x: candidate.x, y: candidate.y };
+  }
+
+  function hasRequiredLandmarks(landmarks: unknown[]): landmarks is PoseLandmarks {
+    return REQUIRED_LANDMARK_INDICES.every((index) => getLandmark(landmarks, index) !== null);
+  }
+
+  function getEyeDistance(landmarks: unknown[]) {
+    if (!hasRequiredLandmarks(landmarks)) return null;
+    const leftEye = getLandmark(landmarks, 2);
+    const rightEye = getLandmark(landmarks, 5);
+    if (!leftEye || !rightEye) return null;
     return Math.hypot(leftEye.x - rightEye.x, leftEye.y - rightEye.y);
   }
 
-  function getTorsoHeight(landmarks: any[]) {
-    const nose = landmarks[0];
-    const shoulderMidY = (landmarks[11].y + landmarks[12].y) / 2;
+  function getTorsoHeight(landmarks: unknown[]) {
+    if (!hasRequiredLandmarks(landmarks)) return null;
+    const nose = getLandmark(landmarks, 0);
+    const leftShoulder = getLandmark(landmarks, 11);
+    const rightShoulder = getLandmark(landmarks, 12);
+    if (!nose || !leftShoulder || !rightShoulder) return null;
+    const shoulderMidY = (leftShoulder.y + rightShoulder.y) / 2;
     return Math.abs(shoulderMidY - nose.y);
   }
 
-  function getNoseEarYDiff(landmarks: any[]) {
-    const nose = landmarks[0];
-    const earMidY = (landmarks[7].y + landmarks[8].y) / 2;
+  function getNoseEarYDiff(landmarks: unknown[]) {
+    if (!hasRequiredLandmarks(landmarks)) return null;
+    const nose = getLandmark(landmarks, 0);
+    const leftEar = getLandmark(landmarks, 7);
+    const rightEar = getLandmark(landmarks, 8);
+    if (!nose || !leftEar || !rightEar) return null;
+    const earMidY = (leftEar.y + rightEar.y) / 2;
     return nose.y - earMidY;
   }
 
-  function evaluate(landmarks: any[]) {
+  function getPostureSample(landmarks: unknown[]): Baseline | null {
+    const zoom = getEyeDistance(landmarks);
+    const height = getTorsoHeight(landmarks);
+    const pitch = getNoseEarYDiff(landmarks);
+    if (!isFiniteNumber(zoom) || !isFiniteNumber(height) || !isFiniteNumber(pitch)) return null;
+    return { zoom, height, pitch };
+  }
+
+  function evaluate(currentPosture: Baseline | null) {
     const baseline = baselineRef.current;
-    if (!baseline) {
+    if (!baseline || !currentPosture) {
       return {
         status: "NORMAL" as const,
         metrics: { turtle: false, slouch: false, textNeck: false }
       };
     }
 
-    const currentZoom = getEyeDistance(landmarks);
-    const currentHeight = getTorsoHeight(landmarks);
-    const currentPitch = getNoseEarYDiff(landmarks);
+    const { zoom: currentZoom, height: currentHeight, pitch: currentPitch } = currentPosture;
+
+    if (baseline.height === 0) {
+      return {
+        status: "NORMAL" as const,
+        metrics: { turtle: false, slouch: false, textNeck: false }
+      };
+    }
 
     const zoomRatio = currentZoom / baseline.zoom;
     const heightRatio = currentHeight / baseline.height;
@@ -175,12 +222,16 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (results.poseLandmarks) {
+        const posture = getPostureSample(results.poseLandmarks);
+        if (!posture) {
+          setStatus("NORMAL");
+          setMetrics({ turtle: false, slouch: false, textNeck: false });
+          updateFps();
+          return;
+        }
+
         if (baselineRequestedRef.current) {
-          baselineRef.current = {
-            zoom: getEyeDistance(results.poseLandmarks),
-            height: getTorsoHeight(results.poseLandmarks),
-            pitch: getNoseEarYDiff(results.poseLandmarks)
-          };
+          baselineRef.current = posture;
           baselineRequestedRef.current = false;
         }
 
@@ -194,7 +245,7 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
           radius: 2
         });
 
-        const evaluated = evaluate(results.poseLandmarks);
+        const evaluated = evaluate(posture);
         setStatus(evaluated.status);
         setMetrics(evaluated.metrics);
       }

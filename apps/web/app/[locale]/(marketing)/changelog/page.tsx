@@ -1,17 +1,6 @@
 import { notFound } from "next/navigation";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
-
-const entries = [
-  {
-    version: "v0.1.0",
-    date: "2026-02-13",
-    items: [
-      "Initial bilingual landing structure (KR/EN)",
-      "Webcam demo with MediaPipe Pose integration",
-      "Download, how-it-works, FAQ, privacy pages"
-    ]
-  }
-];
+import { CHANGELOG_ENTRIES } from "@/lib/downloads";
 
 export default function ChangelogPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
@@ -22,7 +11,7 @@ export default function ChangelogPage({ params }: { params: { locale: string } }
     <main>
       <section className="section">
         <h1>{copy.pages.changelog.title}</h1>
-        {entries.map((entry) => (
+        {CHANGELOG_ENTRIES.map((entry) => (
           <article className="feature-card" key={entry.version}>
             <h3>
               {entry.version} - {entry.date}
