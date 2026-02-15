@@ -2,16 +2,10 @@ export class AudioAdapter {
     static audioContext = null;
     static masterGain = null;
 
-    constructor(soundPath, options = {}) {
-        this.audio = new Audio(soundPath);
-        this.mode = options.mode || "webaudio";
+    constructor(options = {}) {
         this.volume = typeof options.volume === "number" ? options.volume : 0.6;
         this.baseCooldownMs = options.cooldownMs || 10000;
-        this.lastPlayedAt = {
-            tap: 0,
-            soft: 0,
-            double: 0
-        };
+        this.lastPlayedAt = { tap: 0 };
         this.isPlaying = false;
 
         this._ensureAudioGraph();
@@ -41,14 +35,9 @@ export class AudioAdapter {
         }
     }
 
-    setMode(mode) {
-        this.mode = mode;
-    }
-
     setVolume(v01) {
         const clamped = Math.max(0, Math.min(1, v01));
         this.volume = clamped;
-        this.audio.volume = clamped;
         if (AudioAdapter.masterGain) {
             AudioAdapter.masterGain.gain.value = clamped;
         }
@@ -56,8 +45,6 @@ export class AudioAdapter {
 
     resetCooldown() {
         this.lastPlayedAt.tap = 0;
-        this.lastPlayedAt.soft = 0;
-        this.lastPlayedAt.double = 0;
         this.isPlaying = false;
     }
 
@@ -67,15 +54,6 @@ export class AudioAdapter {
         if (now - this.lastPlayedAt[key] < cooldownMs) return false;
         this.lastPlayedAt[key] = now;
         return true;
-    }
-
-    _playMp3() {
-        if (this.audio.paused) {
-            this.audio.currentTime = 0;
-            this.audio.play().catch(error => {
-                console.error("Error playing audio:", error);
-            });
-        }
     }
 
     _scheduleTone({ freq, durationMs, attackMs, releaseMs, type, gainScale, startDelayMs }) {
@@ -114,17 +92,11 @@ export class AudioAdapter {
     }
 
     async playTap() {
-        if (this.mode === "off") return;
-        if (this.mode === "mp3") {
-            this._playMp3();
-            return;
-        }
         await this._resumeIfNeeded();
         if (!this._canPlay("tap", this.baseCooldownMs)) return;
 
         this.isPlaying = true;
-        // Glassy low bell: base + soft harmonic
-        // Softer "Apple-like" double chime: short, rounded, sine-based
+        // Rounded double chime with low-mid emphasis.
         this._scheduleTone({ freq: 540, durationMs: 260, attackMs: 14, releaseMs: 160, type: "sine", gainScale: 1.0 });
         this._scheduleTone({ freq: 810, durationMs: 220, attackMs: 14, releaseMs: 140, type: "sine", gainScale: 0.22, startDelayMs: 10 });
         this._scheduleTone({ freq: 540, durationMs: 260, attackMs: 14, releaseMs: 160, type: "sine", gainScale: 0.9, startDelayMs: 190 });
@@ -132,47 +104,5 @@ export class AudioAdapter {
         setTimeout(() => {
             this.isPlaying = false;
         }, 440);
-    }
-
-    async playSoftChime() {
-        if (this.mode === "off") return;
-        if (this.mode === "mp3") {
-            this._playMp3();
-            return;
-        }
-        await this._resumeIfNeeded();
-        if (!this._canPlay("soft", Math.floor(this.baseCooldownMs * 1.2))) return;
-
-        this.isPlaying = true;
-        this._scheduleTone({ freq: 2000, durationMs: 260, attackMs: 10, releaseMs: 120 });
-        setTimeout(() => {
-            this._scheduleTone({ freq: 2800, durationMs: 260, attackMs: 10, releaseMs: 120 });
-        }, 180);
-        setTimeout(() => {
-            this.isPlaying = false;
-        }, 520);
-    }
-
-    async playDoubleChime() {
-        if (this.mode === "off") return;
-        if (this.mode === "mp3") {
-            this._playMp3();
-            return;
-        }
-        await this._resumeIfNeeded();
-        if (!this._canPlay("double", Math.floor(this.baseCooldownMs * 1.5))) return;
-
-        this.isPlaying = true;
-        this._scheduleTone({ freq: 2400, durationMs: 220, attackMs: 8, releaseMs: 90 });
-        setTimeout(() => {
-            this._scheduleTone({ freq: 2400, durationMs: 220, attackMs: 8, releaseMs: 90 });
-        }, 240);
-        setTimeout(() => {
-            this.isPlaying = false;
-        }, 520);
-    }
-
-    play() {
-        this._playMp3();
     }
 }

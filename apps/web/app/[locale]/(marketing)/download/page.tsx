@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
+import { DOWNLOAD_URLS } from "@/lib/downloads";
 import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
-
-const MAC_DOWNLOAD_URL =
-  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-mac-arm64.dmg";
-const WIN_DOWNLOAD_URL =
-  "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download/PoseGuard-Lite-win-x64.exe";
 
 export default function DownloadPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
@@ -18,8 +14,8 @@ export default function DownloadPage({ params }: { params: { locale: string } })
         <h1>{copy.pages.download.title}</h1>
         <p className="muted">{copy.pages.download.body}</p>
         <DownloadButtons
-          macUrl={MAC_DOWNLOAD_URL}
-          winUrl={WIN_DOWNLOAD_URL}
+          macUrl={DOWNLOAD_URLS.mac}
+          winUrl={DOWNLOAD_URLS.win}
           macLabel={copy.pages.download.mac}
           winLabel={copy.pages.download.win}
           locale={locale}

@@ -32,8 +32,7 @@ const labelVolume = document.getElementById('label-volume');
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
 const mediaPipeAdapter = new MediaPipeAdapter();
-const audioAdapter = new AudioAdapter('./assets/alert.mp3', {
-    mode: "webaudio",
+const audioAdapter = new AudioAdapter({
     volume: SOUND_CONFIG.VOLUME / 100,
     cooldownMs: SOUND_CONFIG.COOLDOWN_MS
 });

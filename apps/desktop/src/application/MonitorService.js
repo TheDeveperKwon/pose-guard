@@ -1,5 +1,5 @@
 import { Posture } from '../domain/Posture.js';
-import { MONITORING_CONFIG, SOUND_CONFIG } from '../config/constants.js';
+import { MONITORING_CONFIG } from '../config/constants.js';
 
 export class MonitorService {
     constructor(cameraAdapter, mediaPipeAdapter, audioAdapter, evaluator, view) {
@@ -13,6 +13,7 @@ export class MonitorService {
         this.badPostureStartTime = null; // Timestamp when bad posture started
         this.lastAlertLevel = null;
         this.lastFrameTime = 0; // For frame rate throttling if needed
+        this.shouldCaptureBaseline = false;
 
         // Bind the callback for MediaPipe results
         this.mediaPipeAdapter.setCallback(this.onPoseDetected.bind(this));
@@ -49,8 +50,13 @@ export class MonitorService {
         requestAnimationFrame(async () => {
             const now = Date.now();
             if (now - this.lastFrameTime >= MONITORING_CONFIG.FRAME_INTERVAL) {
-                await this.mediaPipeAdapter.send(this.cameraAdapter.videoElement);
-                this.lastFrameTime = now;
+                try {
+                    await this.mediaPipeAdapter.send(this.cameraAdapter.videoElement);
+                    this.lastFrameTime = now;
+                } catch (error) {
+                    // Keep the monitoring loop alive even if one frame fails.
+                    console.error("Pose processing failed:", error);
+                }
             }
             this.loop();
         });

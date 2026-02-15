@@ -12,8 +12,6 @@ export const MONITORING_CONFIG = {
 };
 
 export const SOUND_CONFIG = {
-    MODE: "webaudio",
     VOLUME: 60,
-    COOLDOWN_MS: 1500,
-    ESCALATE_AFTER_MS: 8000
+    COOLDOWN_MS: 1500
 };
