@@ -69,6 +69,12 @@ video {
     transition: opacity 0.3s ease;
 }
 
+.video-container video,
+.video-container canvas {
+    transform: scaleX(-1);
+    transform-origin: center center;
+}
+
 canvas {
     position: absolute;
     top: 0;
