@@ -4,7 +4,12 @@ import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 
 export const metadata: Metadata = {
   title: "PoseGuard",
-  description: "Low-power high-performance posture monitoring"
+  description: "Low-power high-performance posture monitoring",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png"
+  }
 };
 
 export default function RootLayout({
