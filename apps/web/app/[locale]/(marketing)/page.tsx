@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 import { notFound } from "next/navigation";
+import { DOWNLOAD_URLS } from "@/lib/downloads";
+import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
 
 export default function LandingPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
@@ -27,6 +29,19 @@ export default function LandingPage({ params }: { params: { locale: string } }) 
             {copy.hero.ctaDemo}
           </Link>
         </div>
+      </section>
+
+      <section className="section">
+        <h2>{copy.sections.quickDownloadTitle}</h2>
+        <p className="muted">{copy.sections.quickDownloadBody}</p>
+        <DownloadButtons
+          macUrl={DOWNLOAD_URLS.mac}
+          winUrl={DOWNLOAD_URLS.win}
+          macLabel={copy.pages.download.mac}
+          winLabel={copy.pages.download.win}
+          locale={locale}
+          source="landing-hero"
+        />
       </section>
 
       <section className="section">

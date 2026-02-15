@@ -8,16 +8,21 @@ type Props = {
   macLabel: string;
   winLabel: string;
   locale: string;
+  source?: string;
 };
 
-export function DownloadButtons({ macUrl, winUrl, macLabel, winLabel, locale }: Props) {
+export function DownloadButtons({ macUrl, winUrl, macLabel, winLabel, locale, source = "download-page" }: Props) {
   return (
     <div className="cta-row">
       <a
         className="btn btn-primary"
         href={macUrl}
         onClick={() => {
-          trackEvent("download_click", { platform: "macos", locale });
+          trackEvent("download_click", {
+            platform: "macos",
+            locale,
+            source
+          });
         }}
       >
         {macLabel}
@@ -26,7 +31,11 @@ export function DownloadButtons({ macUrl, winUrl, macLabel, winLabel, locale }: 
         className="btn"
         href={winUrl}
         onClick={() => {
-          trackEvent("download_click", { platform: "windows", locale });
+          trackEvent("download_click", {
+            platform: "windows",
+            locale,
+            source
+          });
         }}
       >
         {winLabel}

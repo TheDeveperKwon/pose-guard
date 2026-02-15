@@ -99,6 +99,12 @@ a {
   display: flex;
   gap: 10px;
 }
+.cta-row .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
 
 button,
 .btn {
@@ -144,6 +150,52 @@ button,
   border-radius: 12px;
   padding: 14px;
   background: #101922;
+}
+
+.release-meta ul {
+  margin: 8px 0 0;
+  padding: 0 0 0 16px;
+  color: var(--muted);
+}
+
+.download-actions {
+  margin-bottom: 28px;
+}
+
+.release-meta li {
+  margin: 8px 0;
+}
+
+.release-meta li span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.release-link {
+  color: var(--accent);
+}
+
+.install-guide {
+  margin-top: 14px;
+}
+
+.install-guide h3 {
+  margin-top: 0;
+}
+
+.install-steps {
+  margin: 10px 0 14px;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.install-guide-image {
+  width: 100%;
+  max-width: 780px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: block;
 }
 
 .demo-shell .demo-toolbar {

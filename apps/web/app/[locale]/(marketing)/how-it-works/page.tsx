@@ -16,24 +16,12 @@ export default function HowItWorksPage({
         <h1>{copy.pages.how.title}</h1>
         <p className="muted">{copy.pages.how.body}</p>
         <div className="feature-grid">
-          <article className="feature-card">
-            <h3>1. Landmark Extraction</h3>
-            <p className="muted">
-              MediaPipe Pose extracts head and upper body landmarks from each frame.
-            </p>
-          </article>
-          <article className="feature-card">
-            <h3>2. Relative Metric Evaluation</h3>
-            <p className="muted">
-              Eye distance, torso height, and nose-ear delta are compared to your baseline.
-            </p>
-          </article>
-          <article className="feature-card">
-            <h3>3. Low-power Loop</h3>
-            <p className="muted">
-              A throttled processing interval keeps CPU usage stable while preserving feedback quality.
-            </p>
-          </article>
+          {copy.pages.how.steps.map((step) => (
+            <article className="feature-card" key={step.title}>
+              <h3>{step.title}</h3>
+              <p className="muted">{step.body}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>

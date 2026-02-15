@@ -30,15 +30,36 @@ type Copy = {
     features: Array<{ title: string; body: string }>;
     usageTitle: string;
     usageSteps: Array<{ title: string; body: string }>;
+    quickDownloadTitle: string;
+    quickDownloadBody: string;
     privacyTitle: string;
     privacyBody: string;
   };
   footer: string;
   pages: {
     demo: { title: string; body: string };
-    download: { title: string; body: string; mac: string; win: string };
-    how: { title: string; body: string };
-    faq: { title: string };
+    download: {
+      title: string;
+      body: string;
+      mac: string;
+      win: string;
+      meta: {
+        title: string;
+        versionLabel: string;
+        publishedLabel: string;
+        releaseNotesLabel: string;
+        windowsLabel: string;
+      };
+    };
+    how: {
+      title: string;
+      body: string;
+      steps: Array<{ title: string; body: string }>;
+    };
+    faq: {
+      title: string;
+      questions: Array<{ q: string; a: string }>;
+    };
     changelog: { title: string };
     privacy: { title: string; body: string };
     qna: { title: string; body: string };
@@ -99,6 +120,8 @@ const ko: Copy = {
         body: "거북목/구부정/텍스트넥 지표를 확인하고 민감도와 볼륨을 조절합니다."
       }
     ],
+    quickDownloadTitle: "바로 시작하기",
+    quickDownloadBody: "OS별 설치 파일을 바로 내려받아 1분 안에 자세 모니터링을 시작할 수 있습니다.",
     privacyTitle: "프라이버시 우선",
     privacyBody:
       "웹 데모는 브라우저에서 처리되며, 영상 업로드 없이 로컬에서 분석됩니다."
@@ -113,13 +136,50 @@ const ko: Copy = {
       title: "다운로드",
       body: "아래 버튼에서 OS별 설치 파일을 받으세요.",
       mac: "macOS 다운로드",
-      win: "Windows 다운로드"
+      win: "Windows 다운로드",
+      meta: {
+        title: "배포 메타데이터",
+        versionLabel: "버전",
+        publishedLabel: "배포일",
+        releaseNotesLabel: "릴리스 노트",
+        windowsLabel: "Windows"
+      }
     },
     how: {
       title: "작동 원리",
-      body: "눈/어깨/코/귀 랜드마크 변화량을 기반으로 자세를 평가합니다."
+      body: "눈/어깨/코/귀 랜드마크 변화량을 기반으로 자세를 평가합니다.",
+      steps: [
+        {
+          title: "1. 랜드마크 추출",
+          body: "카메라 프레임에서 MediaPipe Pose가 얼굴과 어깨 주변의 핵심 랜드마크를 추적합니다."
+        },
+        {
+          title: "2. 기준선 비교",
+          body: "첫 기준 자세와 현재 프레임을 비교해 경사·거리 변화 지표를 계산합니다."
+        },
+        {
+          title: "3. 경고 판단",
+          body: "지표가 임계값보다 오래 유지되면 경고 신호를 발생해 즉시 피드백을 보여줍니다."
+        }
+      ]
     },
-    faq: { title: "자주 묻는 질문" },
+    faq: {
+      title: "자주 묻는 질문",
+      questions: [
+        {
+          q: "웹캠 영상이 서버로 전송되나요?",
+          a: "아니요. 분석은 브라우저에서 처리되며, 영상 파일은 업로드되지 않습니다."
+        },
+        {
+          q: "컴퓨터가 느려지는 이유가 있나요?",
+          a: "가능하면 720p 이하, FPS를 낮춰서 사용하면 부하가 더 줄어듭니다."
+        },
+        {
+          q: "다운로드한 앱이 막혀 보이면 어떻게 하나요?",
+          a: "웹의 다운로드 페이지에 있는 설치 안내를 따라 실행하세요."
+        }
+      ]
+    },
     changelog: { title: "변경 이력" },
     privacy: {
       title: "개인정보 안내",
@@ -189,6 +249,8 @@ const en: Copy = {
         body: "Watch turtle/slouch/text-neck indicators and adjust sensitivity and volume."
       }
     ],
+    quickDownloadTitle: "Get started in under a minute",
+    quickDownloadBody: "Download the app for your OS and start posture tracking immediately.",
     privacyTitle: "Privacy first",
     privacyBody:
       "The web demo runs in the browser. No video upload is required for analysis."
@@ -203,13 +265,50 @@ const en: Copy = {
       title: "Download",
       body: "Get OS-specific installers from the buttons below.",
       mac: "Download for macOS",
-      win: "Download for Windows"
+      win: "Download for Windows",
+      meta: {
+        title: "Release metadata",
+        versionLabel: "Version",
+        publishedLabel: "Published",
+        releaseNotesLabel: "Release notes",
+        windowsLabel: "Windows"
+      }
     },
     how: {
       title: "How it works",
-      body: "Posture is evaluated from the relative changes of eye/shoulder/nose/ear landmarks."
+      body: "Posture is evaluated from the relative changes of eye/shoulder/nose/ear landmarks.",
+      steps: [
+        {
+          title: "1. Landmark extraction",
+          body: "MediaPipe Pose extracts key landmarks from your webcam frame continuously."
+        },
+        {
+          title: "2. Relative comparison",
+          body: "The current posture is compared with your baseline to measure tilt and drift."
+        },
+        {
+          title: "3. Alert decision",
+          body: "If posture risk stays high over time, the app triggers quiet feedback."
+        }
+      ]
     },
-    faq: { title: "Frequently Asked Questions" },
+    faq: {
+      title: "Frequently Asked Questions",
+      questions: [
+        {
+          q: "Are webcam frames uploaded to a server?",
+          a: "No. The demo processing runs in-browser and frames are not uploaded."
+        },
+        {
+          q: "Can this affect performance?",
+          a: "You can reduce workload by lowering lighting issues and running in a smaller resolution."
+        },
+        {
+          q: "What if the downloaded app is blocked on first run?",
+          a: "Follow the installation notice on the Download page."
+        }
+      ]
+    },
     changelog: { title: "Changelog" },
     privacy: {
       title: "Privacy Notice",
