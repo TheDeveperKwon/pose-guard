@@ -11,8 +11,8 @@ export const DOWNLOAD_URLS = {
 } as const;
 
 export const DOWNLOAD_META = {
-  version: "v1.0.3",
-  releasedAt: "2026-02-15",
+  version: "v1.0.4",
+  releasedAt: "2026-02-16",
   macFileName,
   winFileName,
   releaseNotesUrl: "https://github.com/TheDeveperKwon/pose-guard/releases/latest"
@@ -25,7 +25,9 @@ export const CHANGELOG_ENTRIES = [
     items: [
       "Initial bilingual landing structure (KR/EN)",
       "Webcam demo with MediaPipe Pose integration",
-      "Download, how-it-works, FAQ, and privacy pages"
+      "Webcam/desktop camera visibility toggle and on-device posture point overlay behavior improvements",
+      "SEO metadata, sitemap/robots, and canonical/OG setup for marketing pages",
+      "Shared posture/policy modules refactor and release pipeline readiness"
     ]
   }
 ] as const;
