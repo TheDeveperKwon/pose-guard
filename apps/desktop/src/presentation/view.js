@@ -92,7 +92,6 @@ const monitorService = new MonitorService(
 );
 
 let isPowerSaving = false;
-let isCameraVisible = true;
 
 function setPowerSaving(enabled) {
     isPowerSaving = enabled;
@@ -106,31 +105,41 @@ function setPowerSaving(enabled) {
     } else {
         inputShowCamera.disabled = false;
         const visible = inputShowCamera.checked;
-        isCameraVisible = visible;
         videoElement.style.opacity = visible ? 1 : 0;
         canvasElement.style.opacity = 1;
     }
 }
 
 function setCameraVisibility(visible) {
-    isCameraVisible = visible;
     if (isPowerSaving) return;
     videoElement.style.opacity = visible ? 1 : 0;
     canvasElement.style.opacity = 1;
 }
 
+function syncCanvasSizeToVideo() {
+    if (!videoElement.videoWidth || !videoElement.videoHeight) return;
+    canvasElement.width = videoElement.videoWidth;
+    canvasElement.height = videoElement.videoHeight;
+}
+
 // Event Listeners
 btnStart.addEventListener('click', async () => {
     btnStart.disabled = true;
-    await monitorService.start();
-    btnStop.disabled = false;
-    btnCalibrate.disabled = false;
-    
-    // Resize canvas once video starts
-    videoElement.addEventListener('loadedmetadata', () => {
-        canvasElement.width = videoElement.videoWidth;
-        canvasElement.height = videoElement.videoHeight;
-    }, { once: true });
+    try {
+        if (!window.Pose) {
+            view.updateStatus('MediaPipe not loaded', 'red');
+            throw new Error('MediaPipe is not available');
+        }
+
+        await monitorService.start();
+        btnStop.disabled = false;
+        btnCalibrate.disabled = false;
+        syncCanvasSizeToVideo();
+    } catch (error) {
+        console.error('Failed to start monitoring:', error);
+        view.updateStatus('Camera Error', 'red');
+        btnStart.disabled = false;
+    }
 });
 
 btnStop.addEventListener('click', () => {
@@ -170,10 +179,7 @@ inputVolume.addEventListener('input', (e) => {
 
 // Handle window resize if needed
 window.addEventListener('resize', () => {
-    if (videoElement.videoWidth) {
-        canvasElement.width = videoElement.videoWidth;
-        canvasElement.height = videoElement.videoHeight;
-    }
+    syncCanvasSizeToVideo();
 });
 
 // Initialize sound UI defaults

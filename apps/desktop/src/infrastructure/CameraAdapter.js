@@ -11,10 +11,15 @@ export class CameraAdapter {
                 audio: false
             });
             this.videoElement.srcObject = this.stream;
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 this.videoElement.onloadedmetadata = () => {
-                    this.videoElement.play();
-                    resolve();
+                    Promise.resolve(this.videoElement.play())
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
                 };
             });
         } catch (error) {

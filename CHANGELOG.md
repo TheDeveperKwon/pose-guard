@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.5 (2026-02-16)
+
+### Changed
+- Share posture thresholds/monitoring policy parameters across desktop and web from `apps/shared`.
+- Tune turtle-neck threshold to be more sensitive (`TURTLE_NECK: 1.2`).
+- Simplify desktop app code by removing unused state, duplicated handlers, and dead posture methods.
+
+### Fixed
+- Propagate desktop monitor start errors consistently to UI handling.
+- Correct desktop shared re-export paths so posture/policy modules resolve correctly.
+
 ## v1.0.4 (2026-02-17)
 
 ### Added
@@ -7,10 +18,12 @@
 - Add SEO metadata, OG/Twitter cards, canonical links, sitemap, and robots.
 - Keep posture point overlay visible even when camera preview is hidden.
 - Add/refresh usage and landing content sections.
+- Unify desktop posture/policy imports with shared modules via desktop re-export shims.
 
 ### Fixed
 - Stabilize monitor loop and simplify audio/download flow.
 - Improve favicon and icon handling.
+- Normalize shared module import paths across desktop and web to keep behavior and logic consistent.
 
 ## v1.0.3 (2026-02-14)
 

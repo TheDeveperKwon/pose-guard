@@ -11,7 +11,6 @@ export class MonitorService {
 
         this.isMonitoring = false;
         this.badPostureStartTime = null; // Timestamp when bad posture started
-        this.lastAlertLevel = null;
         this.lastFrameTime = 0; // For frame rate throttling if needed
         this.shouldCaptureBaseline = false;
 
@@ -30,6 +29,10 @@ export class MonitorService {
         } catch (error) {
             console.error("Failed to start monitoring:", error);
             this.view.updateStatus("Camera Error", "red");
+            this.isMonitoring = false;
+            this.badPostureStartTime = null;
+            this.shouldCaptureBaseline = false;
+            throw error;
         }
     }
 
@@ -38,15 +41,14 @@ export class MonitorService {
         this.cameraAdapter.stop();
         this.view.updateStatus("Stopped", "gray");
         this.badPostureStartTime = null;
+        this.shouldCaptureBaseline = false;
+        this.lastFrameTime = 0;
     }
 
     async loop() {
         if (!this.isMonitoring) return;
 
-        // Send video frame to MediaPipe
-        // Note: requestAnimationFrame is usually handled by the browser's render loop,
-        // but here we trigger the processing explicitly.
-        // We can use requestAnimationFrame to sync with display refresh rate.
+        // Send video frame to MediaPipe on each animation tick.
         requestAnimationFrame(async () => {
             const now = Date.now();
             if (now - this.lastFrameTime >= MONITORING_CONFIG.FRAME_INTERVAL) {
@@ -63,13 +65,7 @@ export class MonitorService {
     }
 
     setBaseline() {
-        // Needs to capture the current frame's posture as baseline.
-        // We can do this by setting a flag or exposing a method that takes the *next* available posture.
-        // Or better, we can just grab the latest posture if we stored it.
-        // Since onPoseDetected is async, let's use a one-time flag mechanism or ask the user to stay still.
-        // For simplicity, let's assume the View calls this when the user clicks "Set Baseline".
-        // We need the *current* landmarks to set baseline.
-        // Let's modify onPoseDetected to store the latest posture temporarily or request a baseline capture.
+        // Capture baseline from the next available pose result.
         this.shouldCaptureBaseline = true;
     }
 
@@ -94,17 +90,14 @@ export class MonitorService {
         if (evaluation.status === 'BAD') {
             if (!this.badPostureStartTime) {
                 this.badPostureStartTime = Date.now();
-                this.lastAlertLevel = null;
             } else {
                 const duration = Date.now() - this.badPostureStartTime;
                 if (duration >= MONITORING_CONFIG.DEBOUNCE_TIME) {
                     this.audioAdapter.playTap();
-                    this.lastAlertLevel = 'tap';
                 }
             }
         } else {
             this.badPostureStartTime = null;
-            this.lastAlertLevel = null;
             this.audioAdapter.resetCooldown();
         }
     }

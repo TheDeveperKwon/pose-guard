@@ -8,8 +8,8 @@ import {
   evaluatePosture,
   extractPostureSample,
   type PostureSample
-} from "../../../../shared/posture/index.js";
-import { MONITORING_CONFIG, SOUND_CONFIG } from "../../../../shared/policy/index.js";
+} from "@shared/posture/index.js";
+import { MONITORING_CONFIG, SOUND_CONFIG } from "@shared/policy/index.js";
 
 type Metrics = {
   turtle: boolean;

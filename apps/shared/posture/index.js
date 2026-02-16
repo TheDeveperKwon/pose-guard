@@ -1,7 +1,7 @@
 export const REQUIRED_LANDMARK_INDICES = [0, 2, 5, 7, 8, 11, 12];
 
 export const DEFAULT_THRESHOLDS = {
-  TURTLE_NECK: 1.3,
+  TURTLE_NECK: 1.2,
   SLOUCHING: 0.8,
   TEXT_NECK: 0.05
 };

@@ -1,8 +1,40 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, session, systemPreferences, dialog, shell } = require('electron');
 const path = require('path');
 
 let mainWindow;
 let tray;
+
+async function requestCameraPermission() {
+    if (process.platform !== 'darwin') {
+        return true;
+    }
+
+    const status = systemPreferences.getMediaAccessStatus('camera');
+
+    if (status === 'granted') {
+        return true;
+    }
+
+    const granted = await systemPreferences.askForMediaAccess('camera');
+
+    if (!granted) {
+        dialog.showMessageBox({
+            type: 'warning',
+            title: '카메라 권한 필요',
+            message: 'PoseGuard Lite 카메라 접근이 허용되지 않았습니다.',
+            detail: '메뉴에서 macOS 보안 설정의 카메라 권한을 허용해 주세요.',
+            buttons: ['시스템 설정 열기', '나중에'],
+            defaultId: 0,
+            cancelId: 1
+        }).then((res) => {
+            if (res.response === 0) {
+                shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Camera');
+            }
+        });
+    }
+
+    return granted;
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -30,14 +62,7 @@ function createWindow() {
 }
 
 function createTray() {
-    // Load icon. If not exists, Tray might fail or show empty. 
-    // Ideally we need an icon file.
     const iconPath = path.join(__dirname, 'src/presentation/assets/icon.png');
-    // Simple check or try/catch won't help much with native image load.
-    // If image is empty, it might be invisible.
-    
-    // Create a simple empty native image or try to load.
-    // For now, let's assume the asset will be created.
     const icon = nativeImage.createFromPath(iconPath);
     
     tray = new Tray(icon);
@@ -56,7 +81,21 @@ function createTray() {
     });
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+    const granted = await requestCameraPermission();
+    if (!granted && process.platform === 'darwin') {
+        app.quit();
+        return;
+    }
+
+    session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+        if (permission === 'media' || permission === 'camera') {
+            callback(true);
+            return;
+        }
+        callback(false);
+    });
+
     createWindow();
     createTray();
 

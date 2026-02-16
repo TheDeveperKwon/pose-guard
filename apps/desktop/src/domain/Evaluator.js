@@ -1,4 +1,5 @@
-import { DEFAULT_THRESHOLDS, evaluatePosture } from '../../../shared/posture/index.js';
+import { evaluatePosture } from "../shared/posture/index.js";
+import { DEFAULT_THRESHOLDS } from "../config/constants.js";
 
 export class Evaluator {
     constructor(baselinePosture) {
