@@ -1,6 +1,6 @@
 {
   "name": "pose-guard",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "repository": {
     "type": "git",
@@ -35,9 +35,14 @@
     "files": [
       "main.js",
       "src/**",
-      "../shared/**",
       "package.json",
       "node_modules/**"
+    ],
+    "extraResources": [
+      {
+        "from": "../shared",
+        "to": "shared"
+      }
     ],
     "mac": {
       "target": [

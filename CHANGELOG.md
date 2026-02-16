@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.6 (2026-02-16)
+
+### Fixed
+- Package desktop release resources with `extraResources` so shared modules are available in packaged apps.
+- Prevent release-time `ERR_FILE_NOT_FOUND` when loading shared posture/policy modules from desktop builds.
+
 ## v1.0.5 (2026-02-16)
 
 ### Changed
