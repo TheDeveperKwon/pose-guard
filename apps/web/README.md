@@ -12,6 +12,9 @@ Next.js 기반 KR/EN 랜딩 + 실시간 웹캠 데모 사이트입니다.
 - Dark minimal UI and low-power/high-performance messaging
 - MediaPipe Pose webcam demo (client-side)
 
+## SEO
+- Set NEXT_PUBLIC_SITE_URL to your production domain so OG image, canonical, robots, and sitemap use absolute URLs.
+
 ## Run
 
 ```bash

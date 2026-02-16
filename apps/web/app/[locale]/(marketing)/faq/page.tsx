@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 
 export default function FaqPage({ params }: { params: { locale: string } }) {
@@ -19,4 +20,21 @@ export default function FaqPage({ params }: { params: { locale: string } }) {
       </section>
     </main>
   );
+}
+
+export function generateMetadata({
+  params
+}: {
+  params: { locale: string };
+}): Metadata {
+  if (!isLocale(params.locale)) {
+    return {};
+  }
+  const locale = params.locale as Locale;
+  const copy = getCopy(locale);
+
+  return {
+    title: copy.pages.faq.title,
+    description: copy.pages.faq.questions.map((q) => q.q).join(" | ")
+  };
 }

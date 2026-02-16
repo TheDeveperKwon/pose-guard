@@ -2,9 +2,63 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.NEXT_PUBLIC_VERCEL_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    : "https://localhost");
+
 export const metadata: Metadata = {
-  title: "PoseGuard",
-  description: "Low-power high-performance posture monitoring",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "PoseGuard",
+    template: "%s | PoseGuard"
+  },
+  description:
+    "PoseGuard is a lightweight posture monitoring app powered by MediaPipe Pose and on-device analysis.",
+  keywords: [
+    "posture",
+    "posture monitoring",
+    "bad posture correction",
+    "webcam posture",
+    "pose estimation",
+    "MediaPipe",
+    "PoseGuard"
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    title: "PoseGuard",
+    description:
+      "PoseGuard is a lightweight posture monitoring app powered by MediaPipe Pose and on-device analysis.",
+    siteName: "PoseGuard",
+    images: [
+      {
+        url: "/icon.png",
+        width: 512,
+        height: 512,
+        alt: "PoseGuard"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PoseGuard",
+    description:
+      "PoseGuard is a lightweight posture monitoring app powered by MediaPipe Pose and on-device analysis.",
+    images: ["/icon.png"]
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/en",
+      "ko-KR": "/ko"
+    }
+  },
+  robots: {
+    index: true,
+    follow: true
+  },
   icons: {
     icon: "/icon.png",
     shortcut: "/icon.png",

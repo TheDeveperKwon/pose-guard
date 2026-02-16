@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 
 export default function PrivacyPage({ params }: { params: { locale: string } }) {
@@ -32,4 +33,21 @@ export default function PrivacyPage({ params }: { params: { locale: string } }) 
       </section>
     </main>
   );
+}
+
+export function generateMetadata({
+  params
+}: {
+  params: { locale: string };
+}): Metadata {
+  if (!isLocale(params.locale)) {
+    return {};
+  }
+  const locale = params.locale as Locale;
+  const copy = getCopy(locale);
+
+  return {
+    title: copy.pages.privacy.title,
+    description: copy.pages.privacy.body
+  };
 }

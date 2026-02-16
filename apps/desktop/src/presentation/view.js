@@ -21,8 +21,7 @@ const valSlouch = document.getElementById('val-slouch');
 const valText = document.getElementById('val-text');
 
 // Settings Elements
-const inputOpacity = document.getElementById('input-opacity');
-const labelOpacity = document.getElementById('label-opacity');
+const inputShowCamera = document.getElementById('input-show-camera');
 const inputSens = document.getElementById('input-sens');
 const labelSens = document.getElementById('label-sens');
 const inputPowerSave = document.getElementById('input-power-save');
@@ -93,6 +92,7 @@ const monitorService = new MonitorService(
 );
 
 let isPowerSaving = false;
+let isCameraVisible = true;
 
 function setPowerSaving(enabled) {
     isPowerSaving = enabled;
@@ -100,15 +100,23 @@ function setPowerSaving(enabled) {
 
     if (enabled) {
         videoElement.style.opacity = 0;
-        inputOpacity.disabled = true;
-        labelOpacity.textContent = "Disabled";
+        canvasElement.style.opacity = 0;
+        inputShowCamera.disabled = true;
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     } else {
-        inputOpacity.disabled = false;
-        const val = inputOpacity.value;
-        videoElement.style.opacity = val / 100;
-        labelOpacity.textContent = `${val}%`;
+        inputShowCamera.disabled = false;
+        const visible = inputShowCamera.checked;
+        isCameraVisible = visible;
+        videoElement.style.opacity = visible ? 1 : 0;
+        canvasElement.style.opacity = 1;
     }
+}
+
+function setCameraVisibility(visible) {
+    isCameraVisible = visible;
+    if (isPowerSaving) return;
+    videoElement.style.opacity = visible ? 1 : 0;
+    canvasElement.style.opacity = 1;
 }
 
 // Event Listeners
@@ -138,11 +146,9 @@ btnCalibrate.addEventListener('click', () => {
 });
 
 // Settings Events
-inputOpacity.addEventListener('input', (e) => {
+inputShowCamera.addEventListener('change', (e) => {
     if (isPowerSaving) return;
-    const val = e.target.value;
-    videoElement.style.opacity = val / 100;
-    labelOpacity.textContent = `${val}%`;
+    setCameraVisibility(e.target.checked);
 });
 
 inputSens.addEventListener('input', (e) => {
@@ -173,3 +179,6 @@ window.addEventListener('resize', () => {
 // Initialize sound UI defaults
 inputVolume.value = SOUND_CONFIG.VOLUME;
 labelVolume.textContent = `${SOUND_CONFIG.VOLUME}%`;
+
+// Initialize camera visibility UI
+setCameraVisibility(inputShowCamera.checked);

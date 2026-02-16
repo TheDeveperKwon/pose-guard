@@ -1,15 +1,4 @@
-export const DEFAULT_THRESHOLDS = {
-    TURTLE_NECK: 1.3,
-    SLOUCHING: 0.8,
-    TEXT_NECK: 0.05
-};
+import { DEFAULT_THRESHOLDS } from "../../shared/posture/index.js";
+import { MONITORING_CONFIG, SOUND_CONFIG } from "../../shared/policy/index.js";
 
-export const MONITORING_CONFIG = {
-    DEBOUNCE_TIME: 2000,
-    FRAME_INTERVAL: 200
-};
-
-export const SOUND_CONFIG = {
-    VOLUME: 60,
-    COOLDOWN_MS: 1500
-};
+export { DEFAULT_THRESHOLDS, MONITORING_CONFIG, SOUND_CONFIG };

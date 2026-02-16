@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 import { CHANGELOG_ENTRIES } from "@/lib/downloads";
 
@@ -26,4 +27,21 @@ export default function ChangelogPage({ params }: { params: { locale: string } }
       </section>
     </main>
   );
+}
+
+export function generateMetadata({
+  params
+}: {
+  params: { locale: string };
+}): Metadata {
+  if (!isLocale(params.locale)) {
+    return {};
+  }
+  const locale = params.locale as Locale;
+  const copy = getCopy(locale);
+
+  return {
+    title: copy.pages.changelog.title,
+    description: `${copy.pages.changelog.title} for PoseGuard`
+  };
 }

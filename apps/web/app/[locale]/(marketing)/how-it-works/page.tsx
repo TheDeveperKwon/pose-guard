@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 
 export default function HowItWorksPage({
@@ -26,4 +27,21 @@ export default function HowItWorksPage({
       </section>
     </main>
   );
+}
+
+export function generateMetadata({
+  params
+}: {
+  params: { locale: string };
+}): Metadata {
+  if (!isLocale(params.locale)) {
+    return {};
+  }
+  const locale = params.locale as Locale;
+  const copy = getCopy(locale);
+
+  return {
+    title: copy.pages.how.title,
+    description: copy.pages.how.body
+  };
 }

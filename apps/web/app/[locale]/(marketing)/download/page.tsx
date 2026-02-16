@@ -1,7 +1,25 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Locale, getCopy, isLocale } from "@/lib/i18n";
 import { DOWNLOAD_META, DOWNLOAD_URLS } from "@/lib/downloads";
 import { DownloadButtons } from "@/features/analytics/components/DownloadButtons";
+
+export function generateMetadata({
+  params
+}: {
+  params: { locale: string };
+}): Metadata {
+  if (!isLocale(params.locale)) {
+    return {};
+  }
+  const locale = params.locale as Locale;
+  const copy = getCopy(locale);
+
+  return {
+    title: copy.pages.download.title,
+    description: copy.pages.download.body
+  };
+}
 
 export default function DownloadPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
