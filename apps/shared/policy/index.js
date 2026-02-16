@@ -1,0 +1,9 @@
+export const MONITORING_CONFIG = {
+  DEBOUNCE_TIME: 2000,
+  FRAME_INTERVAL: 200
+};
+
+export const SOUND_CONFIG = {
+  VOLUME: 60,
+  COOLDOWN_MS: 1500
+};
