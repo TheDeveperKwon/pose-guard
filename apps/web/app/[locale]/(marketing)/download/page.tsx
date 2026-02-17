@@ -49,7 +49,7 @@ export default function DownloadPage({ params }: { params: { locale: string } })
         };
 
   return (
-    <main>
+    <main className="content-main">
       <section className="section">
         <h1>{copy.pages.download.title}</h1>
         <p className="muted">{copy.pages.download.body}</p>

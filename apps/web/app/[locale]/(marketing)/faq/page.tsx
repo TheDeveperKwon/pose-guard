@@ -8,7 +8,7 @@ export default function FaqPage({ params }: { params: { locale: string } }) {
   const copy = getCopy(locale);
 
   return (
-    <main>
+    <main className="content-main">
       <section className="section">
         <h1>{copy.pages.faq.title}</h1>
         {copy.pages.faq.questions.map((item) => (

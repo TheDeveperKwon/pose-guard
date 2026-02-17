@@ -9,7 +9,7 @@ export default function ChangelogPage({ params }: { params: { locale: string } }
   const copy = getCopy(locale);
 
   return (
-    <main>
+    <main className="content-main">
       <section className="section">
         <h1>{copy.pages.changelog.title}</h1>
         {CHANGELOG_ENTRIES.map((entry) => (
@@ -17,11 +17,11 @@ export default function ChangelogPage({ params }: { params: { locale: string } }
             <h3>
               {entry.version} - {entry.date}
             </h3>
-            {entry.items.map((item) => (
-              <p className="muted" key={item}>
-                - {item}
-              </p>
-            ))}
+            <ul className="text-list">
+              {entry.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
           </article>
         ))}
       </section>

@@ -11,14 +11,33 @@ export const DOWNLOAD_URLS = {
 } as const;
 
 export const DOWNLOAD_META = {
-  version: "v1.0.4",
-  releasedAt: "2026-02-17",
+  version: "v1.0.6",
+  releasedAt: "2026-02-16",
   macFileName,
   winFileName,
   releaseNotesUrl: "https://github.com/TheDeveperKwon/pose-guard/releases/latest"
 } as const;
 
 export const CHANGELOG_ENTRIES = [
+  {
+    version: "v1.0.6",
+    date: "2026-02-16",
+    items: [
+      "Package desktop release resources with extraResources so shared modules are available in packaged apps.",
+      "Prevent release-time ERR_FILE_NOT_FOUND when loading shared posture/policy modules from desktop builds."
+    ]
+  },
+  {
+    version: "v1.0.5",
+    date: "2026-02-16",
+    items: [
+      "Share posture thresholds/monitoring policy parameters across desktop and web from apps/shared.",
+      "Tune turtle-neck threshold to be more sensitive (TURTLE_NECK: 1.2).",
+      "Simplify desktop app code by removing unused state, duplicated handlers, and dead posture methods.",
+      "Propagate desktop monitor start errors consistently to UI handling.",
+      "Correct desktop shared re-export paths so posture/policy modules resolve correctly."
+    ]
+  },
   {
     version: "v1.0.4",
     date: "2026-02-17",

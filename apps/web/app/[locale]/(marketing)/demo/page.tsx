@@ -9,7 +9,7 @@ export default function DemoPage({ params }: { params: { locale: string } }) {
   const copy = getCopy(locale);
 
   return (
-    <main>
+    <main className="content-main">
       <section className="section">
         <h1>{copy.pages.demo.title}</h1>
         <p className="muted">{copy.pages.demo.body}</p>

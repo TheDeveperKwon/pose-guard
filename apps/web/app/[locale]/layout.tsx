@@ -15,11 +15,13 @@ export default function LocaleLayout({
   const copy = getCopy(locale);
 
   return (
-    <div className="page-wrap">
+    <>
       <SiteHeader locale={locale} />
-      {children}
-      <footer>{copy.footer}</footer>
-    </div>
+      <div className="page-wrap">
+        {children}
+        <footer>{copy.footer}</footer>
+      </div>
+    </>
   );
 }
 

@@ -21,15 +21,15 @@ export default function PrivacyPage({ params }: { params: { locale: string } }) 
         ];
 
   return (
-    <main>
+    <main className="content-main">
       <section className="section">
         <h1>{copy.pages.privacy.title}</h1>
         <p className="muted">{copy.pages.privacy.body}</p>
-        {details.map((line) => (
-          <p className="muted" key={line}>
-            - {line}
-          </p>
-        ))}
+        <ul className="text-list">
+          {details.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
       </section>
     </main>
   );
