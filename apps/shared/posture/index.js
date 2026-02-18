@@ -6,6 +6,8 @@ export const DEFAULT_THRESHOLDS = {
   TEXT_NECK: 0.05
 };
 
+const EPSILON = 1e-6;
+
 function isFiniteNumber(value) {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -94,7 +96,8 @@ export function evaluatePosture({
   if (!baseline || !current) return DEFAULT_EVALUATION;
   if (!isFiniteNumber(baseline.zoom) || !isFiniteNumber(baseline.height) || !isFiniteNumber(baseline.pitch)) return DEFAULT_EVALUATION;
   if (!isFiniteNumber(current.zoom) || !isFiniteNumber(current.height) || !isFiniteNumber(current.pitch)) return DEFAULT_EVALUATION;
-  if (baseline.height === 0) return DEFAULT_EVALUATION;
+  if (baseline.height <= EPSILON || baseline.zoom <= EPSILON) return DEFAULT_EVALUATION;
+  if (current.zoom <= EPSILON) return DEFAULT_EVALUATION;
 
   const factor = sensitivity / 100;
   const normalizedThresholds = defaultThresholds(thresholds);

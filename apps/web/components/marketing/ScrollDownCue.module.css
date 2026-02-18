@@ -1,0 +1,75 @@
+.root {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(8px);
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: rgba(201, 217, 233, 0.84);
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 45;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.root:hover {
+  color: #e5f0fb;
+  transform: translateX(-50%) translateY(-1px);
+}
+
+.mark {
+  position: relative;
+  width: 18px;
+  height: 12px;
+  display: inline-block;
+  animation: bounce 1.15s ease-in-out infinite;
+}
+
+.mark::before,
+.mark::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  width: 11px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.mark::before {
+  left: 0;
+  transform-origin: left center;
+  transform: rotate(34deg);
+}
+
+.mark::after {
+  right: 0;
+  transform-origin: right center;
+  transform: rotate(-34deg);
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
+}

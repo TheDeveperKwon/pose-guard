@@ -9,7 +9,11 @@ import {
   extractPostureSample,
   type PostureSample
 } from "@shared/posture/index.js";
-import { MONITORING_CONFIG, SOUND_CONFIG } from "@shared/policy/index.js";
+import {
+  ALERT_TONE_PATTERN,
+  MONITORING_CONFIG,
+  SOUND_CONFIG
+} from "@shared/policy/index.js";
 
 type Metrics = {
   turtle: boolean;
@@ -83,41 +87,9 @@ function scheduleTone(
 }
 
 function playAlertSound(audioContext: AudioContext, destination: GainNode) {
-  scheduleTone(audioContext, destination, {
-    freq: 540,
-    durationMs: 260,
-    attackMs: 14,
-    releaseMs: 160,
-    type: "sine",
-    gainScale: 1.0
-  });
-  scheduleTone(audioContext, destination, {
-    freq: 810,
-    durationMs: 220,
-    attackMs: 14,
-    releaseMs: 140,
-    type: "sine",
-    gainScale: 0.22,
-    startDelayMs: 10
-  });
-  scheduleTone(audioContext, destination, {
-    freq: 540,
-    durationMs: 260,
-    attackMs: 14,
-    releaseMs: 160,
-    type: "sine",
-    gainScale: 0.9,
-    startDelayMs: 190
-  });
-  scheduleTone(audioContext, destination, {
-    freq: 810,
-    durationMs: 220,
-    attackMs: 14,
-    releaseMs: 140,
-    type: "sine",
-    gainScale: 0.2,
-    startDelayMs: 200
-  });
+  for (const tone of ALERT_TONE_PATTERN) {
+    scheduleTone(audioContext, destination, tone);
+  }
 }
 
 export function WebcamDemo({ locale }: { locale: Locale }) {
@@ -355,9 +327,15 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
   }
 
   async function start() {
+    if (runningRef.current) return;
+    runningRef.current = true;
     setError("");
+
     try {
-      if (!videoRef.current) return;
+      if (!videoRef.current) {
+        runningRef.current = false;
+        return;
+      }
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480 },
@@ -371,7 +349,6 @@ export function WebcamDemo({ locale }: { locale: Locale }) {
       await ensurePose();
 
       setRunning(true);
-      runningRef.current = true;
       resetAlertState();
       trackEvent("demo_start", { locale });
 

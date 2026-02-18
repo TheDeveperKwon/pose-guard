@@ -22,6 +22,9 @@ export class MonitorService {
         if (this.isMonitoring) return;
         
         try {
+            if (typeof this.mediaPipeAdapter.init === "function") {
+                await this.mediaPipeAdapter.init();
+            }
             await this.cameraAdapter.start();
             this.isMonitoring = true;
             this.view.updateStatus("Monitoring", "green");

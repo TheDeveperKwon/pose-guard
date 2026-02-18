@@ -201,12 +201,6 @@ input:focus-visible {
     linear-gradient(180deg, rgba(24, 38, 52, 0.8), rgba(10, 14, 19, 0.94));
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 16px;
-}
-
 .hero-kicker {
   margin: 0 0 12px;
   font-size: 0.78rem;
@@ -265,160 +259,10 @@ input:focus-visible {
   max-width: 640px;
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.chip {
-  border: 1px solid rgba(126, 247, 196, 0.24);
-  background: rgba(126, 247, 196, 0.1);
-  color: #bbfede;
-  border-radius: 999px;
-  padding: 6px 11px;
-  font-size: 0.78rem;
-  letter-spacing: 0.015em;
-}
-
-.hero-stack {
-  display: grid;
-  gap: 10px;
-}
-
-.hero-side {
-  display: grid;
-  gap: 10px;
-}
-
-.hero-proof {
-  border: 1px solid rgba(126, 247, 196, 0.24);
-  border-radius: 14px;
-  padding: 14px;
-  background: linear-gradient(180deg, rgba(16, 30, 38, 0.9), rgba(11, 20, 27, 0.96));
-}
-
-.hero-proof h3 {
-  margin: 0 0 10px;
-  font-size: 1rem;
-}
-
-.hero-proof ul {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.hero-proof li + li {
-  margin-top: 8px;
-}
-
-.hero-stack-card {
-  border: 1px solid rgba(139, 154, 171, 0.24);
-  background: linear-gradient(180deg, rgba(17, 25, 33, 0.86), rgba(12, 19, 26, 0.97));
-  border-radius: 14px;
-  padding: 14px;
-}
-
-.hero-stack-card h3 {
-  margin: 2px 0 8px;
-  font-size: 1rem;
-}
-
-.hero-stack-card p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.hero-stack-index {
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 .cta-row {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.scroll-cue {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%) translateY(8px);
-  width: 42px;
-  height: 42px;
-  border: 0;
-  border-radius: 999px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  color: rgba(201, 217, 233, 0.84);
-  box-shadow: none;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 45;
-  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
-}
-
-.scroll-cue.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.scroll-cue:hover {
-  color: #e5f0fb;
-  transform: translateX(-50%) translateY(-1px);
-}
-
-.scroll-cue-mark {
-  position: relative;
-  width: 18px;
-  height: 12px;
-  display: inline-block;
-  animation: scroll-cue-bounce 1.15s ease-in-out infinite;
-}
-
-.scroll-cue-mark::before,
-.scroll-cue-mark::after {
-  content: "";
-  position: absolute;
-  bottom: 2px;
-  width: 11px;
-  height: 2px;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.scroll-cue-mark::before {
-  left: 0;
-  transform-origin: left center;
-  transform: rotate(34deg);
-}
-
-.scroll-cue-mark::after {
-  right: 0;
-  transform-origin: right center;
-  transform: rotate(-34deg);
-}
-
-@keyframes scroll-cue-bounce {
-  0% {
-    transform: translateY(-2px);
-  }
-  50% {
-    transform: translateY(3px);
-  }
-  100% {
-    transform: translateY(-2px);
-  }
 }
 
 .cta-row .btn {
@@ -504,32 +348,6 @@ button:hover,
     #0f141a;
 }
 
-.usage-overview {
-  margin-top: 10px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(139, 154, 171, 0.2);
-}
-
-.usage-overview h3 {
-  margin: 0 0 8px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #a9bdcf;
-}
-
-.usage-overview-list {
-  margin: 0;
-  padding-left: 18px;
-  color: #b3c2d2;
-  line-height: 1.6;
-}
-
-.usage-overview-list li + li {
-  margin-top: 6px;
-}
-
 .usage-layout {
   margin-top: 16px;
   display: grid;
@@ -580,10 +398,6 @@ button:hover,
   margin-top: 8px;
 }
 
-.usage-card--wide {
-  grid-column: 1 / -1;
-}
-
 .quickstart-note {
   margin-top: 16px;
 }
@@ -627,10 +441,6 @@ button:hover,
 
 .landing-main > .section.section--features {
   background: linear-gradient(180deg, #111b25 0%, #0d151d 100%);
-}
-
-.landing-main > .section.section--usage {
-  background: linear-gradient(180deg, #0f1821 0%, #0c131a 100%);
 }
 
 .landing-main > .section.section--privacy {
@@ -903,10 +713,6 @@ footer {
     margin-right: calc(50% - 50vw);
   }
 
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-
   .section {
     padding: 18px;
   }
@@ -930,10 +736,6 @@ footer {
 
   .usage-layout {
     grid-template-columns: 1fr;
-  }
-
-  .usage-card--wide {
-    grid-column: auto;
   }
 
   .demo-grid {

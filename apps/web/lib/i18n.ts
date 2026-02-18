@@ -22,27 +22,18 @@ type Copy = {
     subtitle: string;
     ctaDownload: string;
     ctaDemo: string;
-    chips: string[];
-    stackLabel: string;
-    proofTitle: string;
-    proofPoints: string[];
-    highlights: Array<{ title: string; body: string }>;
   };
   sections: {
     whyTitle: string;
     whyBody: string;
     featuresTitle: string;
     features: Array<{ title: string; body: string }>;
-    usageTitle: string;
     usageSteps: Array<{ title: string; body: string }>;
     quickDownloadTitle: string;
     quickDownloadBody: string;
     privacyTitle: string;
     privacyBody: string;
     usageGuide: {
-      intro: string;
-      overviewTitle: string;
-      overviewItems: string[];
       setupNoticeTitle: string;
       setupNoticeBody: string;
       quickStartTitle: string;
@@ -50,8 +41,6 @@ type Copy = {
       statusItems: string[];
       alertTitle: string;
       alertItems: string[];
-      checklistTitle: string;
-      checklistItems: string[];
     };
   };
   footer: string;
@@ -103,29 +92,7 @@ const ko: Copy = {
     subtitle:
       "PoseGuard는 실시간 자세 분석을 통해 거북목/구부정/텍스트넥을 감지하고 집중 흐름을 방해하지 않도록 조용하게 알려줍니다.",
     ctaDownload: "앱 다운로드",
-    ctaDemo: "웹 데모 시작",
-    chips: ["Real-time", "Low Power", "On-device", "KR/EN"],
-    stackLabel: "핵심 하이라이트",
-    proofTitle: "앱 화면에서 바로 확인",
-    proofPoints: [
-      "상태: NORMAL/BAD 실시간 표시",
-      "거북목·구부정·텍스트넥 개별 판정",
-      "BAD 2초 지속 시에만 경고음 재생"
-    ],
-    highlights: [
-      {
-        title: "무엇을 추적하나요?",
-        body: "거북목, 구부정, 텍스트넥 신호를 동시에 추적합니다."
-      },
-      {
-        title: "언제 경고하나요?",
-        body: "BAD 상태가 잠깐이 아니라 일정 시간 유지될 때만 경고합니다."
-      },
-      {
-        title: "무엇을 조정하나요?",
-        body: "민감도와 볼륨을 즉시 바꾸며 내 환경에 맞출 수 있습니다."
-      }
-    ]
+    ctaDemo: "웹 데모 시작"
   },
   sections: {
     whyTitle: "왜 PoseGuard인가",
@@ -146,7 +113,6 @@ const ko: Copy = {
         body: "나쁜 자세가 일정 시간 유지될 때만 알림."
       }
     ],
-    usageTitle: "프로그램 사용 방법",
     usageSteps: [
       {
         title: "1. 앱 실행 후 모니터링 시작",
@@ -167,13 +133,6 @@ const ko: Copy = {
     privacyBody:
       "웹 데모는 브라우저에서 처리되며, 영상 업로드 없이 로컬에서 분석됩니다.",
     usageGuide: {
-      intro: "아래 순서대로 따라 하면 2분 안에 경고가 어떤 기준으로 동작하는지 이해할 수 있습니다.",
-      overviewTitle: "2분 핵심 흐름",
-      overviewItems: [
-        "카메라를 정면으로 맞추고 어깨 상단이 보이게 세팅",
-        "Start Monitoring 후 Set Baseline 순서로 시작",
-        "지표는 실시간 확인, 경고는 BAD가 유지될 때만 재생"
-      ],
       setupNoticeTitle: "먼저 카메라를 정면으로 맞추고 어깨를 화면에 포함하세요",
       setupNoticeBody:
         "정면을 바라본 자세에서 양쪽 어깨 상단이 함께 보이도록 웹캠 높이와 거리를 조정해야 자세 판정이 가장 정확해집니다.",
@@ -189,12 +148,6 @@ const ko: Copy = {
         "한 프레임에서 바로 울리지 않습니다.",
         "BAD 상태가 일정 시간(기본 2초) 유지될 때만 경고가 재생됩니다.",
         "자세를 회복하면 경고 타이머와 쿨다운이 초기화됩니다."
-      ],
-      checklistTitle: "실행 전 필수 체크리스트",
-      checklistItems: [
-        "웹캠에 어깨 상단까지 보이도록 각도를 맞춥니다.",
-        "바른 자세에서 Set Baseline을 먼저 눌러 기준을 저장합니다.",
-        "민감도는 50부터 시작해 10 단위로 조정합니다."
       ]
     }
   },
@@ -285,29 +238,7 @@ const en: Copy = {
     subtitle:
       "PoseGuard detects turtle neck, slouching, and text neck in real time, then alerts quietly without breaking your focus.",
     ctaDownload: "Download App",
-    ctaDemo: "Try Web Demo",
-    chips: ["Real-time", "Low Power", "On-device", "KR/EN"],
-    stackLabel: "Core highlights",
-    proofTitle: "What you can verify on-screen",
-    proofPoints: [
-      "Status changes live between NORMAL and BAD",
-      "Turtle / Slouch / Text-neck are evaluated separately",
-      "Alert sound plays only after BAD persists for 2s"
-    ],
-    highlights: [
-      {
-        title: "What is tracked?",
-        body: "Turtle neck, slouching, and text-neck risk are tracked together."
-      },
-      {
-        title: "When does it alert?",
-        body: "Alerts trigger only after bad posture persists, not from a single frame."
-      },
-      {
-        title: "What can I tune?",
-        body: "Adjust sensitivity and sound instantly to match your setup."
-      }
-    ]
+    ctaDemo: "Try Web Demo"
   },
   sections: {
     whyTitle: "Why PoseGuard",
@@ -328,7 +259,6 @@ const en: Copy = {
         body: "Warn only after bad posture persists for a configured duration."
       }
     ],
-    usageTitle: "How to use the app",
     usageSteps: [
       {
         title: "1. Start monitoring",
@@ -349,13 +279,6 @@ const en: Copy = {
     privacyBody:
       "The web demo runs in the browser. No video upload is required for analysis.",
     usageGuide: {
-      intro: "Follow this flow and you can understand how alerts are triggered in under two minutes.",
-      overviewTitle: "2-minute quick map",
-      overviewItems: [
-        "Face the camera and keep your upper shoulders in frame",
-        "Start Monitoring first, then Set Baseline while upright",
-        "Metrics update live, but alerts fire only when BAD persists"
-      ],
       setupNoticeTitle: "Set your camera front-facing and keep both shoulders visible first",
       setupNoticeBody:
         "For accurate posture detection, sit facing forward and adjust camera height and distance so your upper shoulders are clearly in frame.",
@@ -371,12 +294,6 @@ const en: Copy = {
         "It does not alert on a single bad frame.",
         "Sound is played only when BAD posture persists (default: 2s).",
         "Returning to normal posture resets the alert timer and cooldown."
-      ],
-      checklistTitle: "Required checklist before run",
-      checklistItems: [
-        "Adjust your camera so upper shoulders are visible.",
-        "Press Set Baseline once while sitting upright.",
-        "Start at sensitivity 50, then tune in steps of 10."
       ]
     }
   },

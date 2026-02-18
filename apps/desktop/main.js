@@ -55,6 +55,10 @@ function createWindow() {
         mainWindow.show();
     });
 
+    mainWindow.on('minimize', () => {
+        createTray();
+    });
+
     // Close the app when the window is closed
     mainWindow.on('close', () => {
         app.quit();
@@ -62,6 +66,8 @@ function createWindow() {
 }
 
 function createTray() {
+    if (tray) return;
+
     const iconPath = path.join(__dirname, 'src/presentation/assets/icon.png');
     const icon = nativeImage.createFromPath(iconPath);
     
@@ -69,7 +75,15 @@ function createTray() {
     tray.setToolTip('PoseGuard Lite');
 
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'Show App', click: () => mainWindow.show() },
+        {
+            label: 'Show App',
+            click: () => {
+                if (!mainWindow) return;
+                if (mainWindow.isMinimized()) mainWindow.restore();
+                mainWindow.show();
+                mainWindow.focus();
+            }
+        },
         { type: 'separator' },
         { label: 'Quit', click: () => app.quit() }
     ]);
@@ -77,7 +91,10 @@ function createTray() {
     tray.setContextMenu(contextMenu);
     
     tray.on('click', () => {
+        if (!mainWindow) return;
+        if (mainWindow.isMinimized()) mainWindow.restore();
         mainWindow.show();
+        mainWindow.focus();
     });
 }
 
@@ -97,13 +114,19 @@ app.whenReady().then(async () => {
     });
 
     createWindow();
-    createTray();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
         }
     });
+});
+
+app.on('before-quit', () => {
+    if (tray) {
+        tray.destroy();
+        tray = null;
+    }
 });
 
 app.on('window-all-closed', () => {

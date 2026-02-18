@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./ScrollDownCue.module.css";
 
 type Props = {
   targetId: string;
@@ -35,11 +36,11 @@ export function ScrollDownCue({ targetId, ariaLabel }: Props) {
   return (
     <button
       type="button"
-      className={`scroll-cue${visible ? " is-visible" : ""}`}
+      className={`${styles.root}${visible ? ` ${styles.visible}` : ""}`}
       onClick={handleClick}
       aria-label={ariaLabel}
     >
-      <span className="scroll-cue-mark" aria-hidden />
+      <span className={styles.mark} aria-hidden />
     </button>
   );
 }

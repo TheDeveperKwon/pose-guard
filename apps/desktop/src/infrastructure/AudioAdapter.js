@@ -1,3 +1,5 @@
+import { ALERT_TONE_PATTERN } from "../config/constants.js";
+
 export class AudioAdapter {
     static audioContext = null;
     static masterGain = null;
@@ -96,13 +98,18 @@ export class AudioAdapter {
         if (!this._canPlay("tap", this.baseCooldownMs)) return;
 
         this.isPlaying = true;
-        // Rounded double chime with low-mid emphasis.
-        this._scheduleTone({ freq: 540, durationMs: 260, attackMs: 14, releaseMs: 160, type: "sine", gainScale: 1.0 });
-        this._scheduleTone({ freq: 810, durationMs: 220, attackMs: 14, releaseMs: 140, type: "sine", gainScale: 0.22, startDelayMs: 10 });
-        this._scheduleTone({ freq: 540, durationMs: 260, attackMs: 14, releaseMs: 160, type: "sine", gainScale: 0.9, startDelayMs: 190 });
-        this._scheduleTone({ freq: 810, durationMs: 220, attackMs: 14, releaseMs: 140, type: "sine", gainScale: 0.2, startDelayMs: 200 });
+        for (const tone of ALERT_TONE_PATTERN) {
+            this._scheduleTone(tone);
+        }
+
+        const playbackMs = ALERT_TONE_PATTERN.reduce((max, tone) => {
+            const delay = tone.startDelayMs || 0;
+            const duration = tone.durationMs || 0;
+            return Math.max(max, delay + duration);
+        }, 0);
+
         setTimeout(() => {
             this.isPlaying = false;
-        }, 440);
+        }, playbackMs + 80);
     }
 }

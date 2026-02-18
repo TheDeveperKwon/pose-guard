@@ -55,7 +55,7 @@ const view = {
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             
             // Only draw if we have landmarks
-            if (posture.landmarks) {
+            if (posture.landmarks && posture.landmarks.length > 0) {
                 // Check if global drawing utils are available
                 if (window.drawConnectors && window.drawLandmarks) {
                     window.drawConnectors(canvasCtx, posture.landmarks, window.POSE_CONNECTIONS,
