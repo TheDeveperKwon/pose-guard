@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoseGuard Overlay</title>
+    <style>
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            border: 0;
+            opacity: 0;
+            will-change: opacity, box-shadow;
+            box-shadow: inset 0 0 0 rgba(126, 247, 196, 0),
+                        0 0 0 rgba(126, 247, 196, 0);
+        }
+
+        .overlay.pulse {
+            animation: pulse 1.2s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0;
+                box-shadow: inset 0 0 0 rgba(126, 247, 196, 0),
+                            0 0 0 rgba(126, 247, 196, 0);
+            }
+            30% {
+                opacity: 1;
+                box-shadow:
+                    inset 0 34px 68px rgba(126, 247, 196, 0.78),
+                    inset 0 -52px 104px rgba(126, 247, 196, 0.98),
+                    inset 34px 0 68px rgba(126, 247, 196, 0.82),
+                    inset -34px 0 68px rgba(126, 247, 196, 0.82),
+                    0 0 120px rgba(126, 247, 196, 0.62);
+            }
+            100% {
+                opacity: 0;
+                box-shadow:
+                    inset 0 10px 18px rgba(126, 247, 196, 0.2),
+                    inset 0 -16px 24px rgba(126, 247, 196, 0.3),
+                    inset 10px 0 18px rgba(126, 247, 196, 0.2),
+                    inset -10px 0 18px rgba(126, 247, 196, 0.2),
+                    0 0 24px rgba(126, 247, 196, 0.22);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay" class="overlay"></div>
+    <script>
+        const overlay = document.getElementById('overlay');
+
+        window.__triggerOverlayPulse = () => {
+            overlay.classList.remove('pulse');
+            void overlay.offsetWidth;
+            overlay.classList.add('pulse');
+        };
+
+        window.__clearOverlayPulse = () => {
+            overlay.classList.remove('pulse');
+        };
+    </script>
+</body>
+</html>

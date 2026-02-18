@@ -22,6 +22,7 @@ const valText = document.getElementById('val-text');
 
 // Settings Elements
 const inputShowCamera = document.getElementById('input-show-camera');
+const inputMannerMode = document.getElementById('input-manner-mode');
 const inputSens = document.getElementById('input-sens');
 const labelSens = document.getElementById('label-sens');
 const inputPowerSave = document.getElementById('input-power-save');
@@ -36,6 +37,18 @@ const audioAdapter = new AudioAdapter({
     cooldownMs: SOUND_CONFIG.COOLDOWN_MS
 });
 const evaluator = new Evaluator(null);
+
+function triggerMannerAlert() {
+    if (window.desktopOverlay && typeof window.desktopOverlay.trigger === 'function') {
+        window.desktopOverlay.trigger();
+    }
+}
+
+function clearMannerAlert() {
+    if (window.desktopOverlay && typeof window.desktopOverlay.clear === 'function') {
+        window.desktopOverlay.clear();
+    }
+}
 
 // View Object
 const view = {
@@ -73,7 +86,10 @@ const view = {
             updateStatItem(valSlouch, evaluation.results.isSlouching);
             updateStatItem(valText, evaluation.results.isTextNeck);
         }
-    }
+    },
+
+    triggerMannerAlert,
+    clearMannerAlert
 };
 
 function updateStatItem(element, isBad) {
@@ -92,6 +108,7 @@ const monitorService = new MonitorService(
 );
 
 let isPowerSaving = false;
+let isMannerMode = false;
 
 function setPowerSaving(enabled) {
     isPowerSaving = enabled;
@@ -160,6 +177,14 @@ inputShowCamera.addEventListener('change', (e) => {
     setCameraVisibility(e.target.checked);
 });
 
+inputMannerMode.addEventListener('change', (e) => {
+    isMannerMode = e.target.checked;
+    monitorService.setMannerMode(isMannerMode);
+    if (!isMannerMode) {
+        clearMannerAlert();
+    }
+});
+
 inputSens.addEventListener('input', (e) => {
     const val = parseInt(e.target.value);
     labelSens.textContent = val;
@@ -188,3 +213,4 @@ labelVolume.textContent = `${SOUND_CONFIG.VOLUME}%`;
 
 // Initialize camera visibility UI
 setCameraVisibility(inputShowCamera.checked);
+monitorService.setMannerMode(isMannerMode);

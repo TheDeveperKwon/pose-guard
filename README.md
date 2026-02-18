@@ -15,6 +15,8 @@ apps/
 1. Desktop App (`apps/desktop`)
 - Electron + MediaPipe Pose
 - 실시간 자세 판정, Baseline 보정, 디바운스 알림
+- 매너모드(공공장소용): 소리 대신 전체화면 가장자리 시각 알림
+- 최소화 시 트레이 생성, 닫기 시 앱 종료
 - 상세 문서: `apps/desktop/README.md`
 
 2. Web Site (`apps/web`)

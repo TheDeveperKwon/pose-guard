@@ -1,5 +1,5 @@
 import { Posture } from '../domain/Posture.js';
-import { MONITORING_CONFIG } from '../config/constants.js';
+import { MONITORING_CONFIG, SOUND_CONFIG } from '../config/constants.js';
 
 export class MonitorService {
     constructor(cameraAdapter, mediaPipeAdapter, audioAdapter, evaluator, view) {
@@ -13,6 +13,9 @@ export class MonitorService {
         this.badPostureStartTime = null; // Timestamp when bad posture started
         this.lastFrameTime = 0; // For frame rate throttling if needed
         this.shouldCaptureBaseline = false;
+        this.isMannerMode = false;
+        this.lastMannerAlertAt = 0;
+        this.isMannerAlertVisible = false;
 
         // Bind the callback for MediaPipe results
         this.mediaPipeAdapter.setCallback(this.onPoseDetected.bind(this));
@@ -46,6 +49,22 @@ export class MonitorService {
         this.badPostureStartTime = null;
         this.shouldCaptureBaseline = false;
         this.lastFrameTime = 0;
+        this.lastMannerAlertAt = 0;
+        if (this.isMannerAlertVisible) {
+            this.view.clearMannerAlert?.();
+            this.isMannerAlertVisible = false;
+        }
+    }
+
+    setMannerMode(enabled) {
+        this.isMannerMode = Boolean(enabled);
+        if (!this.isMannerMode) {
+            this.lastMannerAlertAt = 0;
+            if (this.isMannerAlertVisible) {
+                this.view.clearMannerAlert?.();
+                this.isMannerAlertVisible = false;
+            }
+        }
     }
 
     async loop() {
@@ -96,12 +115,26 @@ export class MonitorService {
             } else {
                 const duration = Date.now() - this.badPostureStartTime;
                 if (duration >= MONITORING_CONFIG.DEBOUNCE_TIME) {
-                    this.audioAdapter.playTap();
+                    if (this.isMannerMode) {
+                        const now = Date.now();
+                        if (now - this.lastMannerAlertAt >= SOUND_CONFIG.COOLDOWN_MS) {
+                            this.lastMannerAlertAt = now;
+                            this.view.triggerMannerAlert?.();
+                            this.isMannerAlertVisible = true;
+                        }
+                    } else {
+                        this.audioAdapter.playTap();
+                    }
                 }
             }
         } else {
             this.badPostureStartTime = null;
+            this.lastMannerAlertAt = 0;
             this.audioAdapter.resetCooldown();
+            if (this.isMannerAlertVisible) {
+                this.view.clearMannerAlert?.();
+                this.isMannerAlertVisible = false;
+            }
         }
     }
 }

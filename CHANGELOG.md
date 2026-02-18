@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.7 (2026-02-18)
+
+### Added
+- Add `Manner Mode` option for public-space usage in desktop app settings.
+- Add full-screen edge glow overlay alert (display-level visual cue) as a quiet alternative to sound alarms.
+
+### Changed
+- Keep `close = quit` behavior, and create tray icon on window minimize for quick restore.
+- Strengthen and rebalance visual glow intensity (including bottom edge visibility) for better noticeability.
+
+### Refactored
+- Lazily initialize MediaPipe Pose in desktop adapter and start flow to reduce load-time failure risk.
+- Share alert tone pattern from `apps/shared/policy` across desktop/web to prevent sound drift.
+- Add posture metric safety guards for zero/invalid ratio inputs.
+- Simplify web styling structure by removing dead global CSS and moving scroll-cue style to component module.
+
 ## v1.0.6 (2026-02-16)
 
 ### Fixed

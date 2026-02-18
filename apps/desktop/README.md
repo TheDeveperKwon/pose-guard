@@ -8,8 +8,9 @@ Electron + MediaPipe Pose 기반의 자세 모니터링 데스크톱 앱입니�
 - 실시간 자세 추정 및 오버레이 렌더링
 - 기준 자세(Baseline) 캡처 후 상대 변화 기반 판정
 - 자세 경고 상태가 일정 시간(기본 2초) 지속될 때만 알림음 재생(디바운스)
-- 민감도(0~100), 비디오 투명도 조절
-- 창 닫기 시 앱 종료
+- 매너모드: 공공장소에서 소리 대신 화면 가장자리 시각 알림
+- 민감도(0~100), 카메라 표시 on/off, 절전 모드, 볼륨 조절
+- 최소화 시 트레이 생성, 창 닫기 시 앱 종료
 
 ## 기술 스택
 
@@ -73,7 +74,7 @@ npm run dist    # DMG/ZIP 생성
 2. 자세를 곧게 한 상태에서 `Set Baseline` 클릭
 3. 상태 패널에서 `Turtle Neck`, `Slouching`, `Text Neck` 확인
 4. `Overall Sensitivity` 슬라이더로 판정 민감도 조정
-5. `Video Opacity`로 원본 영상 가시성 조정
+5. 공공장소에서는 `Manner Mode`를 켜서 소리 대신 시각 알림 사용
 6. 중지 시 `Stop` 클릭
 
 ## 판정 로직 요약
@@ -97,7 +98,7 @@ npm run dist    # DMG/ZIP 생성
 `src/config/constants.js`:
 
 - `DEFAULT_THRESHOLDS`
-  - `TURTLE_NECK: 1.3`
+  - `TURTLE_NECK: 1.2`
   - `SLOUCHING: 0.8`
   - `TEXT_NECK: 0.05`
 - `MONITORING_CONFIG`
@@ -108,7 +109,8 @@ npm run dist    # DMG/ZIP 생성
 
 - Baseline을 설정하지 않으면 기본적으로 `NORMAL` 상태로 처리됩니다.
 - BAD 상태가 `DEBOUNCE_TIME` 이상 지속되면 알림음이 재생됩니다.
-- 창 닫기 버튼을 누르면 앱이 종료됩니다.
+- `Manner Mode` 활성화 시 알림음 대신 전체화면 가장자리 시각 알림이 표시됩니다.
+- 창 닫기 버튼을 누르면 앱이 종료되며, 최소화 시 트레이 아이콘이 생성됩니다.
 - MediaPipe 관련 스크립트를 CDN으로 불러오므로 오프라인 환경에서는 동작이 제한될 수 있습니다.
 
 ## 사운드 모드
