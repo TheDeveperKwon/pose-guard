@@ -607,6 +607,37 @@ button:hover,
   display: block;
 }
 
+.demo-notice {
+  margin-top: 8px;
+  border-top-color: rgba(126, 247, 196, 0.26);
+}
+
+.demo-notice-actions {
+  margin-top: 12px;
+}
+
+.demo-notice-link {
+  border-color: rgba(139, 154, 171, 0.38);
+  background: transparent;
+  color: #c7d6e4;
+  font-weight: 600;
+}
+
+.demo-notice-link:hover {
+  border-color: rgba(126, 247, 196, 0.42);
+  color: #e6f0f9;
+}
+
+.demo-stage-title {
+  margin-top: 24px;
+}
+
+.demo-stage-wrap {
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(139, 154, 171, 0.22);
+}
+
 .demo-shell .demo-toolbar {
   display: flex;
   gap: 8px;

@@ -193,15 +193,19 @@ const ko: Copy = {
       questions: [
         {
           q: "웹캠 영상이 서버로 전송되나요?",
-          a: "아니요. 분석은 브라우저에서 처리되며, 영상 파일은 업로드되지 않습니다."
+          a: "아니요. 웹 데모와 데스크톱 앱 모두 카메라 프레임을 로컬에서 처리하며, 영상 파일을 서버로 업로드하지 않습니다."
         },
         {
-          q: "컴퓨터가 느려지는 이유가 있나요?",
-          a: "가능하면 720p 이하, FPS를 낮춰서 사용하면 부하가 더 줄어듭니다."
+          q: "웹 데모와 데스크톱 앱의 차이는 무엇인가요?",
+          a: "웹 데모는 핵심 흐름을 빠르게 체험하는 일부 기능 버전입니다. 정식 기능(안정적인 모니터링/알림 설정/매너모드)은 데스크톱 앱에서 제공됩니다."
         },
         {
-          q: "다운로드한 앱이 막혀 보이면 어떻게 하나요?",
-          a: "웹의 다운로드 페이지에 있는 설치 안내를 따라 실행하세요."
+          q: "공공장소에서 소리 없이 사용할 수 있나요?",
+          a: "네. 데스크톱 앱 Settings에서 Manner Mode를 켜면 경고음 대신 화면 가장자리 시각 알림으로 동작합니다."
+        },
+        {
+          q: "다운로드한 앱이 실행 차단되면 어떻게 하나요?",
+          a: "다운로드 페이지의 설치 안내대로 진행하세요. macOS는 시스템 설정 > 개인정보 보호 및 보안에서 '그래도 열기'가 필요할 수 있습니다."
         }
       ]
     },
@@ -339,15 +343,19 @@ const en: Copy = {
       questions: [
         {
           q: "Are webcam frames uploaded to a server?",
-          a: "No. The demo processing runs in-browser and frames are not uploaded."
+          a: "No. Both the web demo and desktop app process camera frames locally, and video files are not uploaded."
         },
         {
-          q: "Can this affect performance?",
-          a: "You can reduce workload by lowering lighting issues and running in a smaller resolution."
+          q: "What is the difference between the web demo and desktop app?",
+          a: "The web demo is a limited preview for quickly trying core flow. Full functionality (stable monitoring, richer alert controls, Manner Mode) is provided in the desktop app."
+        },
+        {
+          q: "Can I use it silently in public spaces?",
+          a: "Yes. Turn on Manner Mode in desktop Settings to use visual edge alerts instead of alarm sound."
         },
         {
           q: "What if the downloaded app is blocked on first run?",
-          a: "Follow the installation notice on the Download page."
+          a: "Follow the installation guide on the Download page. On macOS, you may need to allow it via System Settings > Privacy & Security > Open Anyway."
         }
       ]
     },
