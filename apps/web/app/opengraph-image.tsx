@@ -17,36 +17,36 @@ export default function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "56px 64px",
-          color: "#dbe3ed",
-          background:
-            "radial-gradient(900px 420px at 82% -10%, #1a3140 0%, rgba(7, 10, 13, 0) 60%), radial-gradient(700px 340px at -12% 22%, #12202c 0%, rgba(7, 10, 13, 0) 58%), #070a0d"
+          padding: 56,
+          color: "#e8eef6",
+          backgroundColor: "#0b1118",
+          backgroundImage: "linear-gradient(135deg, #0f1b26 0%, #0b1118 65%)"
         }}
       >
         <div
           style={{
             display: "flex",
             fontSize: 28,
-            letterSpacing: "0.18em",
+            letterSpacing: 4,
             textTransform: "uppercase",
             color: "#9bb2c8"
           }}
         >
           PoseGuard
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: "82%" }}>
+        <div style={{ display: "flex", flexDirection: "column", maxWidth: "82%" }}>
           <div
             style={{
               display: "flex",
-              fontSize: 78,
+              fontSize: 82,
               lineHeight: 1.05,
-              letterSpacing: "-0.03em",
+              letterSpacing: -2,
               fontWeight: 700
             }}
           >
             Posture Monitoring
           </div>
-          <div style={{ display: "flex", fontSize: 34, color: "#9ab0c5", lineHeight: 1.35 }}>
+          <div style={{ display: "flex", marginTop: 18, fontSize: 34, color: "#b7c7d8", lineHeight: 1.35 }}>
             Real-time on-device posture detection for focused work.
           </div>
         </div>
@@ -54,20 +54,19 @@ export default function OpenGraphImage() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 14,
-            fontSize: 26,
-            color: "#7ef7c4"
+            fontSize: 26
           }}
         >
           <div
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: "#7ef7c4"
+              width: 14,
+              height: 14,
+              borderRadius: 9999,
+              backgroundColor: "#7ef7c4",
+              marginRight: 12
             }}
           />
-          poseguard.app
+          <span style={{ color: "#91ffd0" }}>poseguard.app</span>
         </div>
       </div>
     ),
