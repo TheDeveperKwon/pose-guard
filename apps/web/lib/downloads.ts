@@ -1,4 +1,4 @@
-import { LATEST_RELEASE, RELEASES } from "@shared/release/index.js";
+import { LATEST_RELEASE, RELEASES } from "@shared/releases/index.js";
 
 const RELEASE_DOWNLOAD_BASE =
   "https://github.com/TheDeveperKwon/pose-guard/releases/latest/download";
