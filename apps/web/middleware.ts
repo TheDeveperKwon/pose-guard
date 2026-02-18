@@ -3,6 +3,10 @@ import { isLocale } from "./lib/i18n";
 
 const LOCALE_COOKIE = "pg_locale";
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
+const LOCALE_REDIRECT_BYPASS_PATHS = new Set([
+  "/opengraph-image",
+  "/twitter-image"
+]);
 
 function detectLocaleFromAcceptLanguage(value: string | null) {
   if (!value) return null;
@@ -49,7 +53,11 @@ function resolveLocale(request: NextRequest): "ko" | "en" {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/_next") || pathname.includes(".")) {
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.includes(".") ||
+    LOCALE_REDIRECT_BYPASS_PATHS.has(pathname)
+  ) {
     return NextResponse.next();
   }
 
