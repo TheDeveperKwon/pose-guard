@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     siteName: "PoseGuard",
     images: [
       {
-        url: "/icon.png",
-        width: 512,
-        height: 512,
-        alt: "PoseGuard"
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "PoseGuard posture monitoring"
       }
     ]
   },
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: "PoseGuard",
     description:
       "PoseGuard is a lightweight posture monitoring app powered by MediaPipe Pose and on-device analysis.",
-    images: ["/icon.png"]
+    images: ["/twitter-image"]
   },
   alternates: {
     canonical: "/",

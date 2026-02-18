@@ -43,7 +43,21 @@ export function generateMetadata({
       title: copy.brand,
       description: copy.hero.subtitle,
       locale: locale === "ko" ? "ko_KR" : "en_US",
-      alternateLocale: locale === "ko" ? ["en_US"] : ["ko_KR"]
+      alternateLocale: locale === "ko" ? ["en_US"] : ["ko_KR"],
+      images: [
+        {
+          url: "/opengraph-image",
+          width: 1200,
+          height: 630,
+          alt: "PoseGuard posture monitoring"
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: copy.brand,
+      description: copy.hero.subtitle,
+      images: ["/twitter-image"]
     },
     alternates: {
       canonical: `/${locale}`,
