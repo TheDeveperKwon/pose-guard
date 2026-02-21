@@ -10,15 +10,20 @@ const videoElement = document.getElementById('webcam');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
-const btnStart = document.getElementById('btn-start');
-const btnStop = document.getElementById('btn-stop');
+const btnMonitorToggle = document.getElementById('btn-monitor-toggle');
+const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const btnCalibrate = document.getElementById('btn-calibrate');
+const advancedSettings = document.getElementById('advanced-settings');
 
 const statusIndicator = document.getElementById('status-indicator');
 const statusText = document.getElementById('status-text');
 const valTurtle = document.getElementById('val-turtle');
 const valSlouch = document.getElementById('val-slouch');
 const valText = document.getElementById('val-text');
+const calibrationStatus = document.getElementById('calibration-status');
+const calibrationLabel = document.getElementById('calibration-label');
+const calibrationPercent = document.getElementById('calibration-percent');
+const calibrationFill = document.getElementById('calibration-fill');
 
 // Settings Elements
 const inputShowCamera = document.getElementById('input-show-camera');
@@ -28,6 +33,8 @@ const labelSens = document.getElementById('label-sens');
 const inputPowerSave = document.getElementById('input-power-save');
 const inputVolume = document.getElementById('input-volume');
 const labelVolume = document.getElementById('label-volume');
+const onboardingModal = document.getElementById('onboarding-modal');
+const btnOnboardingConfirm = document.getElementById('btn-onboarding-confirm');
 
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
@@ -37,6 +44,11 @@ const audioAdapter = new AudioAdapter({
     cooldownMs: SOUND_CONFIG.COOLDOWN_MS
 });
 const evaluator = new Evaluator(null);
+const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
+
+let isPowerSaving = false;
+let isMannerMode = false;
+let isMonitoring = false;
 
 function triggerMannerAlert() {
     if (window.desktopOverlay && typeof window.desktopOverlay.trigger === 'function') {
@@ -50,65 +62,31 @@ function clearMannerAlert() {
     }
 }
 
-// View Object
-const view = {
-    updateStatus: (text, color) => {
-        statusText.textContent = text;
-        statusIndicator.style.backgroundColor = color === 'green' ? '#4caf50' : 
-                                              color === 'red' ? '#f44336' : 
-                                              color === 'blue' ? '#2196f3' : '#757575';
-    },
-
-    render: (posture, evaluation) => {
-        const shouldDraw = !document.hidden && !isPowerSaving;
-
-        if (shouldDraw) {
-            // Draw on canvas
-            canvasCtx.save();
-            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-            
-            // Only draw if we have landmarks
-            if (posture.landmarks && posture.landmarks.length > 0) {
-                // Check if global drawing utils are available
-                if (window.drawConnectors && window.drawLandmarks) {
-                    window.drawConnectors(canvasCtx, posture.landmarks, window.POSE_CONNECTIONS,
-                        { color: '#00FF00', lineWidth: 2 });
-                    window.drawLandmarks(canvasCtx, posture.landmarks,
-                        { color: '#FF0000', lineWidth: 1, radius: 3 });
-                }
-            }
-            canvasCtx.restore();
-        }
-
-        // Update Stats
-        if (evaluation.results) {
-            updateStatItem(valTurtle, evaluation.results.isTurtleNeck);
-            updateStatItem(valSlouch, evaluation.results.isSlouching);
-            updateStatItem(valText, evaluation.results.isTextNeck);
-        }
-    },
-
-    triggerMannerAlert,
-    clearMannerAlert
-};
-
-function updateStatItem(element, isBad) {
-    if (isBad) {
-        element.textContent = "WARNING";
-        element.style.color = "#f44336";
-    } else {
-        element.textContent = "Good";
-        element.style.color = "#4caf50";
-    }
+function resetStatItem(element) {
+    element.textContent = '--';
+    element.style.color = '#9e9e9e';
 }
 
-// Initialize Service
-const monitorService = new MonitorService(
-    cameraAdapter, mediaPipeAdapter, audioAdapter, evaluator, view
-);
+function resetStats() {
+    resetStatItem(valTurtle);
+    resetStatItem(valSlouch);
+    resetStatItem(valText);
+}
 
-let isPowerSaving = false;
-let isMannerMode = false;
+function updateStatItem(element, isBad) {
+    if (typeof isBad !== 'boolean') {
+        resetStatItem(element);
+        return;
+    }
+
+    if (isBad) {
+        element.textContent = 'WARNING';
+        element.style.color = '#f44336';
+    } else {
+        element.textContent = 'Good';
+        element.style.color = '#4caf50';
+    }
+}
 
 function setPowerSaving(enabled) {
     isPowerSaving = enabled;
@@ -121,9 +99,7 @@ function setPowerSaving(enabled) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     } else {
         inputShowCamera.disabled = false;
-        const visible = inputShowCamera.checked;
-        videoElement.style.opacity = visible ? 1 : 0;
-        canvasElement.style.opacity = 1;
+        setCameraVisibility(inputShowCamera.checked);
     }
 }
 
@@ -139,32 +115,208 @@ function syncCanvasSizeToVideo() {
     canvasElement.height = videoElement.videoHeight;
 }
 
-// Event Listeners
-btnStart.addEventListener('click', async () => {
-    btnStart.disabled = true;
+function setMonitorUi(active) {
+    isMonitoring = active;
+    btnMonitorToggle.textContent = active ? 'Stop Monitoring' : 'Start Monitoring';
+    btnMonitorToggle.classList.toggle('is-stop', active);
+    btnCalibrate.disabled = !active;
+}
+
+function toggleSettingsPanel(forceOpen) {
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : advancedSettings.hidden;
+    advancedSettings.hidden = !shouldOpen;
+    btnSettingsToggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    btnSettingsToggle.textContent = shouldOpen ? 'Hide Settings' : 'Settings';
+}
+
+function setCalibrationProgress(progress, message) {
+    if (!calibrationStatus || !calibrationLabel || !calibrationPercent || !calibrationFill) {
+        return;
+    }
+
+    const normalized = Math.max(0, Math.min(100, Math.round(progress)));
+    calibrationStatus.hidden = false;
+    calibrationLabel.textContent = message || 'Calibrating...';
+    calibrationPercent.textContent = `${normalized}%`;
+    calibrationFill.style.width = `${normalized}%`;
+}
+
+function clearCalibrationProgress() {
+    if (!calibrationStatus || !calibrationLabel || !calibrationPercent || !calibrationFill) {
+        return;
+    }
+
+    calibrationStatus.hidden = true;
+    calibrationLabel.textContent = 'Calibrating...';
+    calibrationPercent.textContent = '0%';
+    calibrationFill.style.width = '0%';
+}
+
+function hasSeenOnboarding() {
     try {
-        if (!window.Pose) {
-            view.updateStatus('MediaPipe not loaded', 'red');
-            throw new Error('MediaPipe is not available');
+        return window.localStorage.getItem(ONBOARDING_STORAGE_KEY) === '1';
+    } catch {
+        return false;
+    }
+}
+
+function markOnboardingSeen() {
+    try {
+        window.localStorage.setItem(ONBOARDING_STORAGE_KEY, '1');
+    } catch {
+        // Ignore storage errors.
+    }
+}
+
+function closeOnboarding() {
+    if (!onboardingModal) return;
+    markOnboardingSeen();
+    onboardingModal.hidden = true;
+    document.body.classList.remove('onboarding-open');
+    if (btnMonitorToggle && typeof btnMonitorToggle.focus === 'function') {
+        btnMonitorToggle.focus();
+    }
+}
+
+function openOnboarding() {
+    if (!onboardingModal) return;
+    onboardingModal.hidden = false;
+    document.body.classList.add('onboarding-open');
+}
+
+function initializeOnboarding() {
+    if (!onboardingModal || !btnOnboardingConfirm) return;
+
+    const dismissOnboarding = () => closeOnboarding();
+    btnOnboardingConfirm.addEventListener('click', dismissOnboarding);
+    btnOnboardingConfirm.addEventListener('pointerup', dismissOnboarding);
+
+    onboardingModal.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (target.id === 'btn-onboarding-confirm' || target.closest('#btn-onboarding-confirm')) {
+            closeOnboarding();
+            return;
+        }
+        if (target === onboardingModal) {
+            closeOnboarding();
+        }
+    });
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !onboardingModal.hidden) {
+            closeOnboarding();
+        }
+    });
+
+    if (hasSeenOnboarding()) {
+        onboardingModal.hidden = true;
+        document.body.classList.remove('onboarding-open');
+        return;
+    }
+
+    openOnboarding();
+}
+
+// View Object
+const view = {
+    updateStatus: (text, color) => {
+        statusText.textContent = text;
+        statusIndicator.style.backgroundColor = color === 'green'
+            ? '#4caf50'
+            : color === 'red'
+                ? '#f44336'
+                : color === 'blue'
+                    ? '#2196f3'
+                    : '#757575';
+    },
+
+    render: (posture, evaluation) => {
+        const shouldDraw = !document.hidden && !isPowerSaving;
+        const hasLandmarks = Boolean(
+            posture &&
+            Array.isArray(posture.landmarks) &&
+            posture.landmarks.length > 0
+        );
+
+        if (shouldDraw) {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            if (hasLandmarks && window.drawConnectors && window.drawLandmarks) {
+                window.drawConnectors(canvasCtx, posture.landmarks, window.POSE_CONNECTIONS, {
+                    color: '#00FF00',
+                    lineWidth: 2
+                });
+                window.drawLandmarks(canvasCtx, posture.landmarks, {
+                    color: '#FF0000',
+                    lineWidth: 1,
+                    radius: 3
+                });
+            }
+
+            canvasCtx.restore();
         }
 
-        await monitorService.start();
-        btnStop.disabled = false;
-        btnCalibrate.disabled = false;
-        syncCanvasSizeToVideo();
+        if (!hasLandmarks || !evaluation?.results) {
+            resetStats();
+            return;
+        }
+
+        updateStatItem(valTurtle, evaluation.results.isTurtleNeck);
+        updateStatItem(valSlouch, evaluation.results.isSlouching);
+        updateStatItem(valText, evaluation.results.isTextNeck);
+    },
+
+    updateCalibrationProgress: (progress, message) => {
+        setCalibrationProgress(progress, message);
+    },
+    clearCalibrationProgress,
+    triggerMannerAlert,
+    clearMannerAlert
+};
+
+// Initialize Service
+const monitorService = new MonitorService(
+    cameraAdapter,
+    mediaPipeAdapter,
+    audioAdapter,
+    evaluator,
+    view
+);
+
+// Event Listeners
+btnMonitorToggle.addEventListener('click', async () => {
+    btnMonitorToggle.disabled = true;
+
+    try {
+        if (isMonitoring) {
+            monitorService.stop();
+            setMonitorUi(false);
+            clearCalibrationProgress();
+            resetStats();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        } else {
+            if (!window.Pose) {
+                view.updateStatus('MediaPipe not loaded', 'red');
+                throw new Error('MediaPipe is not available');
+            }
+
+            await monitorService.start();
+            setMonitorUi(true);
+            syncCanvasSizeToVideo();
+        }
     } catch (error) {
-        console.error('Failed to start monitoring:', error);
+        console.error('Failed to toggle monitoring:', error);
         view.updateStatus('Camera Error', 'red');
-        btnStart.disabled = false;
+        setMonitorUi(false);
+    } finally {
+        btnMonitorToggle.disabled = false;
     }
 });
 
-btnStop.addEventListener('click', () => {
-    monitorService.stop();
-    btnStart.disabled = false;
-    btnStop.disabled = true;
-    btnCalibrate.disabled = true;
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+btnSettingsToggle.addEventListener('click', () => {
+    toggleSettingsPanel();
 });
 
 btnCalibrate.addEventListener('click', () => {
@@ -186,7 +338,7 @@ inputMannerMode.addEventListener('change', (e) => {
 });
 
 inputSens.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value);
+    const val = parseInt(e.target.value, 10);
     labelSens.textContent = val;
     evaluator.setSensitivity(val);
 });
@@ -196,21 +348,29 @@ inputPowerSave.addEventListener('change', (e) => {
 });
 
 inputVolume.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value);
+    const val = parseInt(e.target.value, 10);
     labelVolume.textContent = `${val}%`;
     audioAdapter.setVolume(val / 100);
 });
-
 
 // Handle window resize if needed
 window.addEventListener('resize', () => {
     syncCanvasSizeToVideo();
 });
 
-// Initialize sound UI defaults
+// Initialize defaults
 inputVolume.value = SOUND_CONFIG.VOLUME;
 labelVolume.textContent = `${SOUND_CONFIG.VOLUME}%`;
+inputShowCamera.checked = false;
+inputMannerMode.checked = false;
+inputPowerSave.checked = false;
 
-// Initialize camera visibility UI
-setCameraVisibility(inputShowCamera.checked);
-monitorService.setMannerMode(isMannerMode);
+setPowerSaving(false);
+setCameraVisibility(false);
+monitorService.setMannerMode(false);
+setMonitorUi(false);
+resetStats();
+toggleSettingsPanel(false);
+clearCalibrationProgress();
+view.updateStatus('Ready', 'gray');
+initializeOnboarding();

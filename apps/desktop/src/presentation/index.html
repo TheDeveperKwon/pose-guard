@@ -3,57 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; connect-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
+    >
     <title>PoseGuard Lite</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>PoseGuard Lite</h1>
-            <div id="status-indicator" class="status-dot"></div>
+        <header class="app-header">
+            <div>
+                <h1>PoseGuard Lite</h1>
+                <p class="header-subtitle">Monitor posture with minimal distractions</p>
+            </div>
+            <div class="status-pill">
+                <div id="status-indicator" class="status-dot"></div>
+                <span id="status-text">Ready</span>
+            </div>
         </header>
 
         <main>
             <div class="video-container">
                 <video id="webcam" playsinline></video>
                 <canvas id="output_canvas"></canvas>
+                <p class="video-tip">Camera preview is hidden by default.</p>
             </div>
 
             <div class="controls">
-                <button id="btn-start">Start Monitoring</button>
-                <button id="btn-stop" disabled>Stop</button>
-                <button id="btn-calibrate" disabled>Set Baseline</button>
+                <button id="btn-monitor-toggle">Start Monitoring</button>
+                <button id="btn-settings-toggle" class="btn-secondary" aria-expanded="false" aria-controls="advanced-settings">
+                    Settings
+                </button>
             </div>
 
-            <section class="settings">
-                <h3>Settings</h3>
+            <div id="calibration-status" class="calibration-status" hidden>
+                <div class="calibration-row">
+                    <span id="calibration-label">Calibrating...</span>
+                    <span id="calibration-percent">0%</span>
+                </div>
+                <div class="calibration-track">
+                    <div id="calibration-fill" class="calibration-fill"></div>
+                </div>
+            </div>
+
+            <section id="advanced-settings" class="settings" hidden>
+                <h3>Advanced Settings</h3>
+                <p class="settings-note">Hover the ? icons for explanations.</p>
                 <div class="setting-group setting-inline">
-                    <label for="input-power-save">Power Saving Mode</label>
-                    <input type="checkbox" id="input-power-save">
+                    <div class="setting-label-row">
+                        <label for="input-show-camera">Show Camera</label>
+                        <span
+                            class="help-tip"
+                            title="When off, your face is hidden and only posture overlay is shown."
+                        >?</span>
+                    </div>
+                    <input type="checkbox" id="input-show-camera">
                 </div>
                 <div class="setting-group setting-inline">
-                    <label for="input-show-camera">Show Camera</label>
-                    <input type="checkbox" id="input-show-camera" checked>
-                </div>
-                <div class="setting-group setting-inline">
-                    <label for="input-manner-mode">Manner Mode</label>
+                    <div class="setting-label-row">
+                        <label for="input-manner-mode">Manner Mode</label>
+                        <span
+                            class="help-tip"
+                            title="Replaces alert sound with a fullscreen edge glow signal."
+                        >?</span>
+                    </div>
                     <input type="checkbox" id="input-manner-mode">
                 </div>
+                <div class="setting-group setting-inline">
+                    <div class="setting-label-row">
+                        <label for="input-power-save">Power Saving Mode</label>
+                        <span
+                            class="help-tip"
+                            title="Hides preview rendering to reduce CPU/GPU usage."
+                        >?</span>
+                    </div>
+                    <input type="checkbox" id="input-power-save">
+                </div>
                 <div class="setting-group">
-                    <label>Overall Sensitivity: <span id="label-sens">50</span></label>
+                    <div class="setting-label-row">
+                        <label>Overall Sensitivity: <span id="label-sens">50</span></label>
+                        <span
+                            class="help-tip"
+                            title="Higher sensitivity reacts faster to posture changes."
+                        >?</span>
+                    </div>
                     <input type="range" id="input-sens" min="0" max="100" step="1" value="50">
                 </div>
                 <div class="setting-group">
-                    <label>Sound Volume: <span id="label-volume">60%</span></label>
+                    <div class="setting-label-row">
+                        <label>Sound Volume: <span id="label-volume">60%</span></label>
+                        <span
+                            class="help-tip"
+                            title="Applies only when Manner Mode is off."
+                        >?</span>
+                    </div>
                     <input type="range" id="input-volume" min="0" max="100" step="1" value="60">
+                </div>
+                <div class="setting-group">
+                    <button id="btn-calibrate" type="button" disabled>Recalibrate Baseline</button>
                 </div>
             </section>
 
             <div class="stats">
-                <div class="stat-item">
-                    <span class="label">Status:</span>
-                    <span id="status-text">Ready</span>
-                </div>
                 <div class="stat-item">
                     <span class="label">Turtle Neck:</span>
                     <span id="val-turtle">--</span>
@@ -68,6 +120,33 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <div id="onboarding-modal" class="onboarding-backdrop" hidden>
+        <section class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+            <p class="onboarding-kicker">WELCOME</p>
+            <h2 id="onboarding-title">PoseGuard Lite 시작 전에 확인하세요</h2>
+            <p class="onboarding-body">
+                첫 사용자는 아래 3가지만 알면 바로 시작할 수 있습니다.
+            </p>
+            <ul class="onboarding-list">
+                <li>
+                    <strong>카메라 미리보기는 기본 OFF</strong><br>
+                    화면에는 사용자가 바로 노출되지 않고, 판정 결과만 먼저 보입니다.
+                </li>
+                <li>
+                    <strong>Start Monitoring을 누르면 자동 기준 자세 설정</strong><br>
+                    처음 몇 초 동안 정면 자세를 잡으면 기준이 자동으로 캘리브레이션됩니다.
+                </li>
+                <li>
+                    <strong>세부 설정은 필요할 때만</strong><br>
+                    기본 사용은 시작/중지 버튼만으로 충분하고, 나머지는 Settings에서 조정할 수 있습니다.
+                </li>
+            </ul>
+            <div class="onboarding-actions">
+                <button id="btn-onboarding-confirm" type="button">확인하고 시작</button>
+            </div>
+        </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
