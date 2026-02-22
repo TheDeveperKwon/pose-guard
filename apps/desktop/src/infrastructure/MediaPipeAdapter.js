@@ -50,7 +50,10 @@ export class MediaPipeAdapter {
 
             const pose = new window.Pose({
                 locateFile: (file) => {
-                    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                    return new URL(
+                        `vendor/mediapipe/pose/${file}`,
+                        window.location.href
+                    ).toString();
                 }
             });
 

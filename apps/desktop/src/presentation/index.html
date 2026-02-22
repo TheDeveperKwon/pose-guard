@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta
         http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; connect-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
     >
     <title>PoseGuard Lite</title>
     <link rel="stylesheet" href="styles.css">
@@ -148,8 +148,8 @@
             </div>
         </section>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="./vendor/mediapipe/pose/pose.js"></script>
+    <script src="./vendor/mediapipe/drawing_utils/drawing_utils.js"></script>
     <script type="module" src="view.js"></script>
 </body>
 </html>

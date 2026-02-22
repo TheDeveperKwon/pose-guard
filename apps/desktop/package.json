@@ -8,10 +8,12 @@
   },
   "main": "main.js",
   "scripts": {
+    "sync:mediapipe": "node scripts/sync-mediapipe-assets.js",
+    "postinstall": "npm run sync:mediapipe",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron .",
-    "build": "electron-builder --dir --publish never",
-    "dist": "electron-builder --publish never"
+    "start": "npm run sync:mediapipe && electron .",
+    "build": "npm run sync:mediapipe && electron-builder --dir --publish never",
+    "dist": "npm run sync:mediapipe && electron-builder --publish never"
   },
   "keywords": [],
   "author": "",
@@ -35,8 +37,7 @@
     "files": [
       "main.js",
       "src/**",
-      "package.json",
-      "node_modules/**"
+      "package.json"
     ],
     "extraResources": [
       {

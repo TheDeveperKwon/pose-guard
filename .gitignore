@@ -15,6 +15,7 @@ pnpm-debug.log*
 
 # Node
 node_modules/
+apps/desktop/src/presentation/vendor/
 
 # Build artifacts
 dist/
