@@ -5,18 +5,101 @@ Language: [한국어](./README.md) | **English**
 PoseGuard Lite is an Electron + MediaPipe Pose desktop app for posture monitoring.  
 It compares webcam landmarks against a calibrated baseline and reports `Turtle Neck`, `Slouching`, and `Text Neck` in real time.
 
+## Quick Start (1 minute)
+
+```bash
+cd apps/desktop
+npm install
+npm start
+```
+
+On first launch:
+1. Allow camera access.
+2. Click `Start Monitoring` and hold a neutral posture for 1-2 seconds.
+3. Adjust alert and sensitivity options in `Settings` if needed.
+
+Notes:
+- MediaPipe assets are auto-synced during `postinstall`, `start`, `build`, and `dist`.
+- Manual sync: `npm run sync:mediapipe`
+
+## Usage Guide
+
+### 1) Pre-check
+
+- Keep your face and shoulders visible in frame.
+- Very dark scenes or strong backlight can reduce detection quality.
+- When multiple people are visible, the app prioritizes a primary user.
+
+### 2) Start and stop monitoring
+
+1. Click `Start Monitoring`
+2. Keep posture steady while status shows `Calibrating...`
+3. Monitoring begins when status changes to `Monitoring`
+4. Click `Stop Monitoring` to stop
+
+Use `Recalibrate Baseline` any time you want to reset the baseline posture.
+
+### 3) Understand status and alerts
+
+- Status cards
+  - `Good`: within normal range vs baseline
+  - `WARNING`: BAD posture detected
+- Alert trigger policy
+  - BAD posture must last longer than `DEBOUNCE_TIME` (default 2000ms)
+  - Repeated alerts are rate-limited by `COOLDOWN_MS` (default 1500ms)
+
+### 4) Settings guide
+
+Settings are saved immediately to local storage and restored on next launch.
+
+| Option | Default | Meaning | Recommended usage |
+| --- | --- | --- | --- |
+| Show Camera | OFF | Shows raw camera preview | Keep OFF for privacy |
+| Visual Alert | ON | Edge-glow overlay for sustained BAD posture | Keep ON by default |
+| Sound Alert | OFF | Adds audio alert for sustained BAD posture | Turn ON in private spaces |
+| Sound Volume | 0% | Alert volume when Sound Alert is ON | Increase only when needed |
+| Overall Sensitivity | 50 | Higher value reacts faster | Lower if too many false positives |
+| Power Saving Mode | OFF | Minimizes preview/rendering load | Turn ON for battery saving |
+
+Tips:
+- `?` icons in Settings support click/hover help.
+- When `Sound Alert` is OFF, the volume slider is disabled.
+
+### 5) Recommended presets
+
+- Office/library: `Visual Alert ON`, `Sound Alert OFF`, `Sensitivity 45-55`
+- Home focus mode: `Visual Alert ON`, `Sound Alert ON`, `Volume 20-40%`, `Sensitivity 55-65`
+- Battery-first: `Power Saving ON`, usually keep `Show Camera OFF`
+
+## Troubleshooting
+
+### Camera does not start
+
+- macOS: System Settings > Privacy & Security > Camera, then allow the app
+- Close other apps that may be using the camera (video meeting tools, etc.)
+
+### `No User Detected` keeps showing
+
+- Make sure both face and shoulders are visible
+- Improve lighting and camera distance, then run `Recalibrate Baseline`
+
+### No sound alert
+
+- Check if `Sound Alert` is ON
+- Check if `Sound Volume` is greater than 0%
+- Check OS output device and mute state
+
+### Visual alert is hard to notice
+
+- Confirm `Visual Alert` is ON
+- Some fullscreen app environments may limit transparent overlay visibility
+
 ## Key Features
 
 - Real-time pose estimation with landmark overlay rendering
 - Primary-user selection when multiple people are detected
 - Automatic baseline calibration at monitor start (about 1.8s)
 - Recalibration progress (%) and status messaging
-- Alerts only after BAD posture lasts beyond `DEBOUNCE_TIME`
-- Repeated-alert cooldown using `COOLDOWN_MS`
-- `Visual Alert` (default ON): full-screen edge glow overlay
-- `Sound Alert` (default OFF): optional extra sound notification
-- Camera preview default OFF, optional toggle in settings
-- Power-saving mode (hides preview/rendering), sensitivity and volume controls
 - One-time onboarding modal on first launch
 - Tray icon on minimize, app quits on window close
 
@@ -60,24 +143,6 @@ apps/desktop
 - Camera permission granted on macOS/Windows
 - Network required for first install (`npm install`)
 
-Notes:
-- MediaPipe assets are auto-synced during `postinstall`, `start`, `build`, and `dist`.
-- Sync target: `src/presentation/vendor/mediapipe`
-
-## Run
-
-```bash
-cd apps/desktop
-npm install
-npm start
-```
-
-Re-run only MediaPipe sync:
-
-```bash
-npm run sync:mediapipe
-```
-
 ## Build
 
 ```bash
@@ -91,15 +156,6 @@ npm run dist    # installer/release artifacts
 - macOS: `dmg`, `zip`
 - Windows: `nsis`, `zip`
 - Linux: `AppImage`, `deb` (local config)
-
-## Usage Flow
-
-1. Click `Start Monitoring`
-2. Keep face and shoulders in frame for auto calibration
-3. Check `Turtle Neck`, `Slouching`, `Text Neck` status fields
-4. Tune sensitivity/visual alert/sound alert/power saving/volume in `Settings` if needed
-5. Click `Recalibrate Baseline` to reset baseline posture
-6. Click `Stop Monitoring` to stop
 
 ## Posture Evaluation Summary
 
@@ -137,14 +193,14 @@ Values:
 UI defaults (`src/presentation/view.js`):
 - `Visual Alert`: ON
 - `Sound Alert`: OFF
-- `Sound Volume`: `0%` (quiet-by-default)
+- `Sound Volume`: `0%`
 
 ## Privacy and Permission Behavior
 
 - Camera data is processed locally.
 - Camera preview is hidden by default; posture overlay can still render.
 - When `Visual Alert` is enabled, alerts use an OS-level transparent overlay window.
-- If `Sound Alert` is also enabled, a sound alert is played under the same BAD posture condition.
+- If `Sound Alert` is also enabled, audio alerts are played under the same BAD posture condition.
 - Window `close` quits the app (not minimize-to-tray).
 
 ## Release
