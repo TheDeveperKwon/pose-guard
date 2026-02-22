@@ -49,56 +49,78 @@
 
             <section id="advanced-settings" class="settings" hidden>
                 <h3>Advanced Settings</h3>
-                <p class="settings-note">Hover the ? icons for explanations.</p>
+                <p class="settings-note">Click or hover the ? icons for explanations.</p>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
                         <label for="input-show-camera">Show Camera</label>
-                        <span
+                        <button
+                            type="button"
                             class="help-tip"
-                            title="When off, your face is hidden and only posture overlay is shown."
-                        >?</span>
+                            aria-label="Show Camera help"
+                            data-help="When off, your face is hidden and only posture overlay is shown."
+                        >?</button>
                     </div>
                     <input type="checkbox" id="input-show-camera">
                 </div>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
-                        <label for="input-manner-mode">Manner Mode</label>
-                        <span
+                        <label for="input-visual-alert">Visual Alert</label>
+                        <button
+                            type="button"
                             class="help-tip"
-                            title="Replaces alert sound with a fullscreen edge glow signal."
-                        >?</span>
+                            aria-label="Visual Alert help"
+                            data-help="Shows a fullscreen edge glow when bad posture continues."
+                        >?</button>
                     </div>
-                    <input type="checkbox" id="input-manner-mode" checked>
+                    <input type="checkbox" id="input-visual-alert" checked>
+                </div>
+                <div class="setting-group setting-inline">
+                    <div class="setting-label-row">
+                        <label for="input-sound-alert">Sound Alert</label>
+                        <button
+                            type="button"
+                            class="help-tip"
+                            aria-label="Sound Alert help"
+                            data-help="Plays a short alert tone when bad posture continues."
+                        >?</button>
+                    </div>
+                    <input type="checkbox" id="input-sound-alert">
                 </div>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
                         <label for="input-power-save">Power Saving Mode</label>
-                        <span
+                        <button
+                            type="button"
                             class="help-tip"
-                            title="Hides preview rendering to reduce CPU/GPU usage."
-                        >?</span>
+                            aria-label="Power Saving Mode help"
+                            data-help="Hides preview rendering to reduce CPU and GPU usage."
+                        >?</button>
                     </div>
                     <input type="checkbox" id="input-power-save">
                 </div>
                 <div class="setting-group">
                     <div class="setting-label-row">
                         <label>Overall Sensitivity: <span id="label-sens">50</span></label>
-                        <span
+                        <button
+                            type="button"
                             class="help-tip"
-                            title="Higher sensitivity reacts faster to posture changes."
-                        >?</span>
+                            aria-label="Overall Sensitivity help"
+                            data-help="Higher sensitivity reacts faster to posture changes."
+                        >?</button>
                     </div>
                     <input type="range" id="input-sens" min="0" max="100" step="1" value="50">
                 </div>
                 <div class="setting-group">
                     <div class="setting-label-row">
                         <label>Sound Volume: <span id="label-volume">0%</span></label>
-                        <span
+                        <button
+                            type="button"
                             class="help-tip"
-                            title="Applies only when Manner Mode is off."
-                        >?</span>
+                            aria-label="Sound Volume help"
+                            data-help="Used when Sound Alert is enabled."
+                        >?</button>
                     </div>
-                    <input type="range" id="input-volume" min="0" max="100" step="1" value="0">
+                    <input type="range" id="input-volume" min="0" max="100" step="1" value="0" disabled>
                 </div>
                 <div class="setting-group">
                     <button id="btn-calibrate" type="button" disabled>Recalibrate Baseline</button>

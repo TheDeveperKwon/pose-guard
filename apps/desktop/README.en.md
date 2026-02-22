@@ -1,6 +1,6 @@
 # PoseGuard Lite (Desktop)
 
-[한국어 버전](./README.md)
+Language: [한국어](./README.md) | **English**
 
 PoseGuard Lite is an Electron + MediaPipe Pose desktop app for posture monitoring.  
 It compares webcam landmarks against a calibrated baseline and reports `Turtle Neck`, `Slouching`, and `Text Neck` in real time.
@@ -13,7 +13,8 @@ It compares webcam landmarks against a calibrated baseline and reports `Turtle N
 - Recalibration progress (%) and status messaging
 - Alerts only after BAD posture lasts beyond `DEBOUNCE_TIME`
 - Repeated-alert cooldown using `COOLDOWN_MS`
-- `Manner Mode` (default ON): full-screen edge glow instead of sound
+- `Visual Alert` (default ON): full-screen edge glow overlay
+- `Sound Alert` (default OFF): optional extra sound notification
 - Camera preview default OFF, optional toggle in settings
 - Power-saving mode (hides preview/rendering), sensitivity and volume controls
 - One-time onboarding modal on first launch
@@ -32,7 +33,7 @@ It compares webcam landmarks against a calibrated baseline and reports `Turtle N
 
 ```text
 apps/desktop
-├─ main.js                              # Electron main process, tray, manner overlay
+├─ main.js                              # Electron main process, tray, visual-alert overlay
 ├─ scripts/
 │  └─ sync-mediapipe-assets.js          # Sync static assets from node_modules to vendor
 ├─ src
@@ -46,7 +47,7 @@ apps/desktop
 │  │  └─ AudioAdapter.js                # WebAudio tone generation
 │  ├─ presentation/
 │  │  ├─ index.html                     # Main UI
-│  │  ├─ overlay.html                   # Full-screen glow overlay for manner mode
+│  │  ├─ overlay.html                   # Full-screen glow overlay for visual alerts
 │  │  ├─ view.js                        # UI events and rendering bridge
 │  │  └─ vendor/mediapipe               # Synced MediaPipe static assets
 │  └─ shared/                           # Re-export shim to apps/shared
@@ -96,7 +97,7 @@ npm run dist    # installer/release artifacts
 1. Click `Start Monitoring`
 2. Keep face and shoulders in frame for auto calibration
 3. Check `Turtle Neck`, `Slouching`, `Text Neck` status fields
-4. Tune sensitivity/manner mode/power saving/volume in `Settings` if needed
+4. Tune sensitivity/visual alert/sound alert/power saving/volume in `Settings` if needed
 5. Click `Recalibrate Baseline` to reset baseline posture
 6. Click `Stop Monitoring` to stop
 
@@ -134,14 +135,16 @@ Values:
   - `COOLDOWN_MS: 1500`ms
 
 UI defaults (`src/presentation/view.js`):
-- `Manner Mode`: ON
+- `Visual Alert`: ON
+- `Sound Alert`: OFF
 - `Sound Volume`: `0%` (quiet-by-default)
 
 ## Privacy and Permission Behavior
 
 - Camera data is processed locally.
 - Camera preview is hidden by default; posture overlay can still render.
-- In `Manner Mode`, alerts use an OS-level transparent overlay window instead of sound.
+- When `Visual Alert` is enabled, alerts use an OS-level transparent overlay window.
+- If `Sound Alert` is also enabled, a sound alert is played under the same BAD posture condition.
 - Window `close` quits the app (not minimize-to-tray).
 
 ## Release
@@ -159,5 +162,5 @@ git push origin v1.0.8
 
 ## Known Gaps
 
-- No persistent user settings yet (sensitivity/volume/mode)
+- No cross-device sync for user settings
 - No automated tests yet (`npm test` is a placeholder)

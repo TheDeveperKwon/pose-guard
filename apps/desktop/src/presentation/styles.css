@@ -239,6 +239,7 @@ button:disabled {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    position: relative;
 }
 
 .setting-group label {
@@ -251,18 +252,75 @@ button:disabled {
     justify-content: center;
     width: 16px;
     height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    padding: 0;
+    background: transparent;
     border-radius: 50%;
     border: 1px solid var(--border-color);
     color: var(--muted-text);
     font-size: 0.7rem;
+    font-weight: 600;
     line-height: 1;
     user-select: none;
-    cursor: help;
+    cursor: pointer;
+    position: relative;
 }
 
-.help-tip:hover {
+.help-tip:hover,
+.help-tip:focus-visible,
+.help-tip.is-open {
     color: white;
     border-color: rgba(255, 255, 255, 0.35);
+}
+
+.help-tip::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: calc(100% + 5px);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid rgba(23, 24, 27, 0.96);
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.help-tip::after {
+    content: attr(data-help);
+    position: absolute;
+    left: 0;
+    top: calc(100% + 10px);
+    width: max-content;
+    max-width: min(260px, calc(100vw - 90px));
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(23, 24, 27, 0.96);
+    color: #e8edf2;
+    font-size: 0.76rem;
+    line-height: 1.35;
+    text-align: left;
+    white-space: normal;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.36);
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    pointer-events: none;
+    z-index: 19;
+}
+
+.help-tip:hover::before,
+.help-tip:hover::after,
+.help-tip:focus-visible::before,
+.help-tip:focus-visible::after,
+.help-tip.is-open::before,
+.help-tip.is-open::after {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .setting-inline input[type="checkbox"] {

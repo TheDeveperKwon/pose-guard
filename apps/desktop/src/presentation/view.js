@@ -5,8 +5,22 @@ import { AudioAdapter } from '../infrastructure/AudioAdapter.js';
 import { Evaluator } from '../domain/Evaluator.js';
 import { SOUND_CONFIG } from '../config/constants.js';
 
-const DEFAULT_MANNER_MODE = true;
+const SETTINGS_STORAGE_KEY = 'pg_settings_v1';
+const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
+const DEFAULT_SENSITIVITY = 50;
+const DEFAULT_SHOW_CAMERA = false;
+const DEFAULT_POWER_SAVE = false;
+const DEFAULT_VISUAL_ALERT = true;
+const DEFAULT_SOUND_ALERT = false;
 const DEFAULT_VOLUME = 0;
+const DEFAULT_SETTINGS = {
+    showCamera: DEFAULT_SHOW_CAMERA,
+    visualAlert: DEFAULT_VISUAL_ALERT,
+    soundAlert: DEFAULT_SOUND_ALERT,
+    sensitivity: DEFAULT_SENSITIVITY,
+    powerSave: DEFAULT_POWER_SAVE,
+    volume: DEFAULT_VOLUME
+};
 
 // DOM Elements
 const videoElement = document.getElementById('webcam');
@@ -30,7 +44,8 @@ const calibrationFill = document.getElementById('calibration-fill');
 
 // Settings Elements
 const inputShowCamera = document.getElementById('input-show-camera');
-const inputMannerMode = document.getElementById('input-manner-mode');
+const inputVisualAlert = document.getElementById('input-visual-alert');
+const inputSoundAlert = document.getElementById('input-sound-alert');
 const inputSens = document.getElementById('input-sens');
 const labelSens = document.getElementById('label-sens');
 const inputPowerSave = document.getElementById('input-power-save');
@@ -38,6 +53,7 @@ const inputVolume = document.getElementById('input-volume');
 const labelVolume = document.getElementById('label-volume');
 const onboardingModal = document.getElementById('onboarding-modal');
 const btnOnboardingConfirm = document.getElementById('btn-onboarding-confirm');
+const helpTips = Array.from(document.querySelectorAll('.help-tip'));
 
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
@@ -47,19 +63,82 @@ const audioAdapter = new AudioAdapter({
     cooldownMs: SOUND_CONFIG.COOLDOWN_MS
 });
 const evaluator = new Evaluator(null);
-const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
 
 let isPowerSaving = false;
-let isMannerMode = DEFAULT_MANNER_MODE;
 let isMonitoring = false;
 
-function triggerMannerAlert() {
+function clampInt(value, min, max, fallback) {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed)) return fallback;
+    return Math.min(max, Math.max(min, parsed));
+}
+
+function normalizeSettings(settings) {
+    const source = settings && typeof settings === 'object' ? settings : {};
+    const hasLegacyMannerMode = typeof source.mannerMode === 'boolean';
+    const legacyVisualAlert = hasLegacyMannerMode
+        ? source.mannerMode
+        : DEFAULT_VISUAL_ALERT;
+    return {
+        showCamera: typeof source.showCamera === 'boolean'
+            ? source.showCamera
+            : DEFAULT_SHOW_CAMERA,
+        visualAlert: typeof source.visualAlert === 'boolean'
+            ? source.visualAlert
+            : legacyVisualAlert,
+        soundAlert: typeof source.soundAlert === 'boolean'
+            ? source.soundAlert
+            : hasLegacyMannerMode
+                ? !source.mannerMode
+                : DEFAULT_SOUND_ALERT,
+        sensitivity: clampInt(source.sensitivity, 0, 100, DEFAULT_SENSITIVITY),
+        powerSave: typeof source.powerSave === 'boolean'
+            ? source.powerSave
+            : DEFAULT_POWER_SAVE,
+        volume: clampInt(source.volume, 0, 100, DEFAULT_VOLUME)
+    };
+}
+
+function loadPersistedSettings() {
+    try {
+        const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
+        if (!raw) return { ...DEFAULT_SETTINGS };
+        return normalizeSettings(JSON.parse(raw));
+    } catch {
+        return { ...DEFAULT_SETTINGS };
+    }
+}
+
+function persistSettings(settings) {
+    try {
+        window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    } catch {
+        // Ignore storage errors.
+    }
+}
+
+function getCurrentSettings() {
+    return normalizeSettings({
+        showCamera: inputShowCamera.checked,
+        visualAlert: inputVisualAlert.checked,
+        soundAlert: inputSoundAlert.checked,
+        sensitivity: inputSens.value,
+        powerSave: inputPowerSave.checked,
+        volume: inputVolume.value
+    });
+}
+
+function saveCurrentSettings() {
+    persistSettings(getCurrentSettings());
+}
+
+function triggerVisualAlert() {
     if (window.desktopOverlay && typeof window.desktopOverlay.trigger === 'function') {
         window.desktopOverlay.trigger();
     }
 }
 
-function clearMannerAlert() {
+function clearVisualAlert() {
     if (window.desktopOverlay && typeof window.desktopOverlay.clear === 'function') {
         window.desktopOverlay.clear();
     }
@@ -112,6 +191,92 @@ function setCameraVisibility(visible) {
     canvasElement.style.opacity = 1;
 }
 
+function setSensitivity(value) {
+    const normalized = clampInt(value, 0, 100, DEFAULT_SENSITIVITY);
+    inputSens.value = String(normalized);
+    labelSens.textContent = String(normalized);
+    evaluator.setSensitivity(normalized);
+}
+
+function setVolume(value) {
+    const normalized = clampInt(value, 0, 100, DEFAULT_VOLUME);
+    inputVolume.value = String(normalized);
+    labelVolume.textContent = `${normalized}%`;
+    audioAdapter.setVolume(normalized / 100);
+}
+
+function setShowCamera(visible) {
+    const normalized = Boolean(visible);
+    inputShowCamera.checked = normalized;
+    setCameraVisibility(normalized);
+}
+
+function setVisualAlertEnabled(enabled) {
+    const normalized = Boolean(enabled);
+    inputVisualAlert.checked = normalized;
+    monitorService.setVisualAlertEnabled(normalized);
+    if (!normalized) {
+        clearVisualAlert();
+    }
+}
+
+function setSoundAlertEnabled(enabled) {
+    const normalized = Boolean(enabled);
+    inputSoundAlert.checked = normalized;
+    inputVolume.disabled = !normalized;
+    monitorService.setSoundAlertEnabled(normalized);
+}
+
+function setPowerSave(enabled) {
+    const normalized = Boolean(enabled);
+    inputPowerSave.checked = normalized;
+    setPowerSaving(normalized);
+}
+
+function applyInitialSettings() {
+    const settings = loadPersistedSettings();
+    setSensitivity(settings.sensitivity);
+    setVolume(settings.volume);
+    setShowCamera(settings.showCamera);
+    setVisualAlertEnabled(settings.visualAlert);
+    setSoundAlertEnabled(settings.soundAlert);
+    setPowerSave(settings.powerSave);
+}
+
+function closeHelpTips() {
+    for (const helpTip of helpTips) {
+        helpTip.classList.remove('is-open');
+        helpTip.setAttribute('aria-expanded', 'false');
+    }
+}
+
+function initializeHelpTips() {
+    if (!helpTips.length) return;
+
+    for (const helpTip of helpTips) {
+        helpTip.setAttribute('aria-expanded', 'false');
+        helpTip.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const shouldOpen = !helpTip.classList.contains('is-open');
+            closeHelpTips();
+            if (shouldOpen) {
+                helpTip.classList.add('is-open');
+                helpTip.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+
+    document.addEventListener('click', () => {
+        closeHelpTips();
+    });
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeHelpTips();
+        }
+    });
+}
+
 function syncCanvasSizeToVideo() {
     if (!videoElement.videoWidth || !videoElement.videoHeight) return;
     canvasElement.width = videoElement.videoWidth;
@@ -130,6 +295,9 @@ function toggleSettingsPanel(forceOpen) {
     advancedSettings.hidden = !shouldOpen;
     btnSettingsToggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
     btnSettingsToggle.textContent = shouldOpen ? 'Hide Settings' : 'Settings';
+    if (!shouldOpen) {
+        closeHelpTips();
+    }
 }
 
 function setCalibrationProgress(progress, message) {
@@ -275,8 +443,8 @@ const view = {
         setCalibrationProgress(progress, message);
     },
     clearCalibrationProgress,
-    triggerMannerAlert,
-    clearMannerAlert
+    triggerVisualAlert,
+    clearVisualAlert
 };
 
 // Initialize Service
@@ -329,31 +497,33 @@ btnCalibrate.addEventListener('click', () => {
 // Settings Events
 inputShowCamera.addEventListener('change', (e) => {
     if (isPowerSaving) return;
-    setCameraVisibility(e.target.checked);
+    setShowCamera(e.target.checked);
+    saveCurrentSettings();
 });
 
-inputMannerMode.addEventListener('change', (e) => {
-    isMannerMode = e.target.checked;
-    monitorService.setMannerMode(isMannerMode);
-    if (!isMannerMode) {
-        clearMannerAlert();
-    }
+inputVisualAlert.addEventListener('change', (e) => {
+    setVisualAlertEnabled(e.target.checked);
+    saveCurrentSettings();
+});
+
+inputSoundAlert.addEventListener('change', (e) => {
+    setSoundAlertEnabled(e.target.checked);
+    saveCurrentSettings();
 });
 
 inputSens.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value, 10);
-    labelSens.textContent = val;
-    evaluator.setSensitivity(val);
+    setSensitivity(e.target.value);
+    saveCurrentSettings();
 });
 
 inputPowerSave.addEventListener('change', (e) => {
-    setPowerSaving(e.target.checked);
+    setPowerSave(e.target.checked);
+    saveCurrentSettings();
 });
 
 inputVolume.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value, 10);
-    labelVolume.textContent = `${val}%`;
-    audioAdapter.setVolume(val / 100);
+    setVolume(e.target.value);
+    saveCurrentSettings();
 });
 
 // Handle window resize if needed
@@ -362,18 +532,11 @@ window.addEventListener('resize', () => {
 });
 
 // Initialize defaults
-inputVolume.value = DEFAULT_VOLUME;
-labelVolume.textContent = `${DEFAULT_VOLUME}%`;
-inputShowCamera.checked = false;
-inputMannerMode.checked = DEFAULT_MANNER_MODE;
-inputPowerSave.checked = false;
-
-setPowerSaving(false);
-setCameraVisibility(false);
-monitorService.setMannerMode(DEFAULT_MANNER_MODE);
 setMonitorUi(false);
 resetStats();
 toggleSettingsPanel(false);
 clearCalibrationProgress();
+applyInitialSettings();
+initializeHelpTips();
 view.updateStatus('Ready', 'gray');
 initializeOnboarding();

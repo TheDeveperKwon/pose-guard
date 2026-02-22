@@ -15,9 +15,10 @@ export class MonitorService {
         this.badPostureStartTime = null; // Timestamp when bad posture started
         this.lastFrameTime = 0; // For frame rate throttling if needed
         this.shouldCaptureBaseline = false;
-        this.isMannerMode = false;
-        this.lastMannerAlertAt = 0;
-        this.isMannerAlertVisible = false;
+        this.isVisualAlertEnabled = true;
+        this.isSoundAlertEnabled = false;
+        this.lastVisualAlertAt = 0;
+        this.isVisualAlertVisible = false;
         this.noUserStatusShown = false;
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
@@ -66,23 +67,30 @@ export class MonitorService {
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
         this.lastFrameTime = 0;
-        this.lastMannerAlertAt = 0;
+        this.lastVisualAlertAt = 0;
         this.noUserStatusShown = false;
         this.view.clearCalibrationProgress?.();
-        if (this.isMannerAlertVisible) {
-            this.view.clearMannerAlert?.();
-            this.isMannerAlertVisible = false;
+        if (this.isVisualAlertVisible) {
+            this.view.clearVisualAlert?.();
+            this.isVisualAlertVisible = false;
         }
     }
 
-    setMannerMode(enabled) {
-        this.isMannerMode = Boolean(enabled);
-        if (!this.isMannerMode) {
-            this.lastMannerAlertAt = 0;
-            if (this.isMannerAlertVisible) {
-                this.view.clearMannerAlert?.();
-                this.isMannerAlertVisible = false;
+    setVisualAlertEnabled(enabled) {
+        this.isVisualAlertEnabled = Boolean(enabled);
+        if (!this.isVisualAlertEnabled) {
+            this.lastVisualAlertAt = 0;
+            if (this.isVisualAlertVisible) {
+                this.view.clearVisualAlert?.();
+                this.isVisualAlertVisible = false;
             }
+        }
+    }
+
+    setSoundAlertEnabled(enabled) {
+        this.isSoundAlertEnabled = Boolean(enabled);
+        if (!this.isSoundAlertEnabled) {
+            this.audioAdapter.resetCooldown();
         }
     }
 
@@ -134,11 +142,11 @@ export class MonitorService {
                 );
             }
             this.badPostureStartTime = null;
-            this.lastMannerAlertAt = 0;
+            this.lastVisualAlertAt = 0;
             this.audioAdapter.resetCooldown();
-            if (this.isMannerAlertVisible) {
-                this.view.clearMannerAlert?.();
-                this.isMannerAlertVisible = false;
+            if (this.isVisualAlertVisible) {
+                this.view.clearVisualAlert?.();
+                this.isVisualAlertVisible = false;
             }
             this.view.render(null, null);
             return;
@@ -220,25 +228,26 @@ export class MonitorService {
             } else {
                 const duration = Date.now() - this.badPostureStartTime;
                 if (duration >= MONITORING_CONFIG.DEBOUNCE_TIME) {
-                    if (this.isMannerMode) {
+                    if (this.isVisualAlertEnabled) {
                         const now = Date.now();
-                        if (now - this.lastMannerAlertAt >= SOUND_CONFIG.COOLDOWN_MS) {
-                            this.lastMannerAlertAt = now;
-                            this.view.triggerMannerAlert?.();
-                            this.isMannerAlertVisible = true;
+                        if (now - this.lastVisualAlertAt >= SOUND_CONFIG.COOLDOWN_MS) {
+                            this.lastVisualAlertAt = now;
+                            this.view.triggerVisualAlert?.();
+                            this.isVisualAlertVisible = true;
                         }
-                    } else {
+                    }
+                    if (this.isSoundAlertEnabled) {
                         this.audioAdapter.playTap();
                     }
                 }
             }
         } else {
             this.badPostureStartTime = null;
-            this.lastMannerAlertAt = 0;
+            this.lastVisualAlertAt = 0;
             this.audioAdapter.resetCooldown();
-            if (this.isMannerAlertVisible) {
-                this.view.clearMannerAlert?.();
-                this.isMannerAlertVisible = false;
+            if (this.isVisualAlertVisible) {
+                this.view.clearVisualAlert?.();
+                this.isVisualAlertVisible = false;
             }
         }
     }
