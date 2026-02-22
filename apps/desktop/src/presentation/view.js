@@ -5,6 +5,9 @@ import { AudioAdapter } from '../infrastructure/AudioAdapter.js';
 import { Evaluator } from '../domain/Evaluator.js';
 import { SOUND_CONFIG } from '../config/constants.js';
 
+const DEFAULT_MANNER_MODE = true;
+const DEFAULT_VOLUME = 0;
+
 // DOM Elements
 const videoElement = document.getElementById('webcam');
 const canvasElement = document.getElementById('output_canvas');
@@ -40,14 +43,14 @@ const btnOnboardingConfirm = document.getElementById('btn-onboarding-confirm');
 const cameraAdapter = new CameraAdapter(videoElement);
 const mediaPipeAdapter = new MediaPipeAdapter();
 const audioAdapter = new AudioAdapter({
-    volume: SOUND_CONFIG.VOLUME / 100,
+    volume: DEFAULT_VOLUME / 100,
     cooldownMs: SOUND_CONFIG.COOLDOWN_MS
 });
 const evaluator = new Evaluator(null);
 const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
 
 let isPowerSaving = false;
-let isMannerMode = false;
+let isMannerMode = DEFAULT_MANNER_MODE;
 let isMonitoring = false;
 
 function triggerMannerAlert() {
@@ -359,15 +362,15 @@ window.addEventListener('resize', () => {
 });
 
 // Initialize defaults
-inputVolume.value = SOUND_CONFIG.VOLUME;
-labelVolume.textContent = `${SOUND_CONFIG.VOLUME}%`;
+inputVolume.value = DEFAULT_VOLUME;
+labelVolume.textContent = `${DEFAULT_VOLUME}%`;
 inputShowCamera.checked = false;
-inputMannerMode.checked = false;
+inputMannerMode.checked = DEFAULT_MANNER_MODE;
 inputPowerSave.checked = false;
 
 setPowerSaving(false);
 setCameraVisibility(false);
-monitorService.setMannerMode(false);
+monitorService.setMannerMode(DEFAULT_MANNER_MODE);
 setMonitorUi(false);
 resetStats();
 toggleSettingsPanel(false);
