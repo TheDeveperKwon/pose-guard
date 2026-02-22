@@ -1,5 +1,23 @@
 export const RELEASES = [
   {
+    version: "v1.0.9",
+    date: "2026-02-23",
+    items: [
+      "Add local MediaPipe asset synchronization for desktop via `sync:mediapipe` and wire it into install/start/build/dist flows.",
+      "Split desktop alert controls into independent visual/sound toggles and add clickable help tips in Settings.",
+      "Expand root/web/desktop README guides with clearer navigation paths and troubleshooting notes."
+    ]
+  },
+  {
+    version: "v1.0.8",
+    date: "2026-02-21",
+    items: [
+      "Upgrade desktop UX and onboarding flow for faster first-time setup.",
+      "Apply privacy-first defaults for monitoring and camera preview behavior.",
+      "Refine monitoring flow, calibration UX, and desktop UI states for stability."
+    ]
+  },
+  {
     version: "v1.0.7",
     date: "2026-02-18",
     items: [

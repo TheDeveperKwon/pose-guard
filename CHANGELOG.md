@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.0.9 (2026-02-23)
+
+### Added
+- Add desktop MediaPipe asset sync script (`apps/desktop/scripts/sync-mediapipe-assets.js`) and wire it into install/start/build/dist flows.
+- Add independent `Visual Alert` / `Sound Alert` controls and clickable help tips in desktop settings.
+
+### Changed
+- Refresh project/web/desktop README docs and add direct navigation links between root and app-level documentation.
+- Expand desktop usage documentation for quick start, settings, and troubleshooting.
+
+## v1.0.8 (2026-02-21)
+
+### Added
+- Add first-run onboarding guidance flow for desktop users.
+
+### Changed
+- Upgrade desktop UX with privacy-oriented defaults and clearer monitoring interactions.
+
+### Refactored
+- Improve MediaPipe/posture monitoring flow and related desktop UI state handling for stability.
+
 ## v1.0.7 (2026-02-18)
 
 ### Added

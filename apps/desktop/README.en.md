@@ -1,6 +1,6 @@
 # PoseGuard Lite (Desktop)
 
-Language: [한국어](./README.md) | **English**
+Docs: [Project README](../../README.md) | [Web README](../web/README.md) | [한국어](./README.md) | **English**
 
 PoseGuard Lite is an Electron + MediaPipe Pose desktop app for posture monitoring.  
 It compares webcam landmarks against a calibrated baseline and reports `Turtle Neck`, `Slouching`, and `Text Neck` in real time.
@@ -212,8 +212,8 @@ Based on `.github/workflows/release.yml`:
 Example:
 
 ```bash
-git tag v1.0.8
-git push origin v1.0.8
+git tag v1.0.9
+git push origin v1.0.9
 ```
 
 ## Known Gaps

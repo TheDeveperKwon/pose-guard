@@ -1,36 +1,23 @@
 # PoseGuard
 
-PoseGuard는 자세 모니터링 데스크톱 앱과 이를 소개/데모하는 웹 사이트를 함께 관리하는 멀티앱 저장소입니다.
+PoseGuard는 자세 모니터링 데스크톱 앱과 이를 소개/체험하는 웹 사이트를 함께 운영하는 멀티앱 저장소입니다.
 
-## Repository Structure
+## 문서 바로가기
 
-```text
-apps/
-├─ desktop/   # Electron 기반 자세 모니터링 앱
-└─ web/       # Next.js 기반 랜딩/데모 사이트
-```
+| 문서 | 용도 | 링크 |
+| --- | --- | --- |
+| 프로젝트 개요 | 저장소 구조, 공통 실행 방법 | **현재 문서** |
+| 데스크톱 앱 문서 (KO) | 앱 실행/설정/빌드/문제 해결 | [apps/desktop/README.md](./apps/desktop/README.md) |
+| 데스크톱 앱 문서 (EN) | Desktop guide in English | [apps/desktop/README.en.md](./apps/desktop/README.en.md) |
+| 웹 앱 문서 | 웹 데모/라우트/환경변수/배포 | [apps/web/README.md](./apps/web/README.md) |
 
-## Apps
-
-1. Desktop App (`apps/desktop`)
-- Electron + MediaPipe Pose
-- 실시간 자세 판정, Baseline 보정, 디바운스 알림
-- 매너모드(공공장소용): 소리 대신 전체화면 가장자리 시각 알림
-- 최소화 시 트레이 생성, 닫기 시 앱 종료
-- 상세 문서: `apps/desktop/README.md`
-
-2. Web Site (`apps/web`)
-- Next.js + TypeScript
-- KR/EN 랜딩, 웹캠 데모, 다운로드/FAQ/설명 페이지
-- 확장형 라우트 그룹: marketing / community / sponsor
-- 상세 문서: `apps/web/README.md`
-
-## Quick Start
+## 빠른 시작
 
 사전 요구사항:
-- Node.js 18+ 권장
+- Node.js 18+
+- npm 9+
 
-Desktop 실행:
+데스크톱 앱 실행:
 
 ```bash
 cd apps/desktop
@@ -38,7 +25,7 @@ npm install
 npm start
 ```
 
-Web 실행:
+웹 앱 실행:
 
 ```bash
 cd apps/web
@@ -46,7 +33,50 @@ npm install
 npm run dev
 ```
 
-## Notes
+## 저장소 구조
 
-- 앱별 의존성은 각 폴더에서 개별 설치합니다.
-- 웹 데모/데스크톱 일부 기능은 카메라 권한과 네트워크(CDN 리소스 로드)가 필요합니다.
+```text
+apps/
+├─ desktop/   # Electron + MediaPipe Pose 데스크톱 앱
+├─ web/       # Next.js 기반 KR/EN 랜딩 + 웹캠 데모
+└─ shared/    # posture/policy/release 공용 모듈
+```
+
+## 앱별 요약
+
+### Desktop (`apps/desktop`)
+
+- 실시간 자세 판정 (`Turtle Neck`, `Slouching`, `Text Neck`)
+- Baseline 캘리브레이션 + 디바운스/쿨다운 알림 정책
+- 시각 알림(오버레이), 소리 알림, 절전 모드, 트레이 지원
+- 자세한 사용법: [apps/desktop/README.md](./apps/desktop/README.md)
+
+### Web (`apps/web`)
+
+- Locale 라우트: `/ko`, `/en`
+- 제품 소개/작동 원리/FAQ/다운로드/데모 페이지
+- GA4 + Clarity + Cloudflare 분석 이벤트 지원
+- 자세한 운영 가이드: [apps/web/README.md](./apps/web/README.md)
+
+## 릴리즈/메타데이터 참고
+
+- 데스크톱 배포 아티팩트 이름은 `apps/desktop/package.json`의 `build.artifactName`을 기준으로 생성됩니다.
+- 웹 다운로드 페이지의 버전/릴리즈 노트 메타데이터는 `apps/shared/releases/index.js`를 사용합니다.
+- 새 릴리즈 반영 시 위 두 파일의 정합성을 함께 확인하세요.
+
+## 개발 시 자주 하는 작업
+
+데스크톱 배포 파일 생성:
+
+```bash
+cd apps/desktop
+npm run dist
+```
+
+웹 프로덕션 빌드 점검:
+
+```bash
+cd apps/web
+npm run build
+npm run start
+```

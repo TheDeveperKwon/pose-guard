@@ -1,6 +1,6 @@
 # PoseGuard Lite (Desktop)
 
-Language: **한국어** | [English](./README.en.md)
+문서 이동: [프로젝트 전체](../../README.md) | [웹 문서](../web/README.md) | **데스크톱 (한국어)** | [English](./README.en.md)
 
 PoseGuard Lite는 Electron + MediaPipe Pose 기반 자세 모니터링 앱입니다.  
 웹캠 랜드마크를 기준 자세(Baseline)와 비교해 `Turtle Neck`, `Slouching`, `Text Neck` 상태를 실시간으로 보여줍니다.
@@ -212,8 +212,8 @@ GitHub Actions(`.github/workflows/release.yml`) 기준:
 예시:
 
 ```bash
-git tag v1.0.8
-git push origin v1.0.8
+git tag v1.0.9
+git push origin v1.0.9
 ```
 
 ## Known Gaps
