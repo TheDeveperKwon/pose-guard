@@ -6,7 +6,9 @@ export default {
         stopMonitoring: '모니터링 중지',
         settings: '설정',
         hideSettings: '설정 숨기기',
-        recalibrateBaseline: '기준 자세 다시 설정'
+        recalibrateBaseline: '기준 자세 다시 설정',
+        recalibrateCoachmark: '판정이 어긋난다고 느껴지면 여기서 기준 자세를 다시 설정하세요.',
+        coachmarkDismiss: '확인'
     },
     status: {
         ready: '준비됨',

@@ -32,9 +32,14 @@
 
             <div class="controls">
                 <button id="btn-monitor-toggle">Start Monitoring</button>
+                <button id="btn-calibrate" type="button" class="btn-secondary" disabled>Recalibrate Baseline</button>
                 <button id="btn-settings-toggle" class="btn-secondary" aria-expanded="false" aria-controls="advanced-settings">
                     Settings
                 </button>
+            </div>
+            <div id="calibrate-coachmark" class="calibrate-coachmark" hidden>
+                <span id="calibrate-coachmark-text">If tracking feels off, use Recalibrate Baseline.</span>
+                <button id="btn-calibrate-coachmark-dismiss" type="button">Got it</button>
             </div>
 
             <div id="calibration-status" class="calibration-status" hidden>
@@ -143,9 +148,6 @@
                         >?</button>
                     </div>
                     <input type="range" id="input-volume" min="0" max="100" step="1" value="0" disabled>
-                </div>
-                <div class="setting-group">
-                    <button id="btn-calibrate" type="button" disabled>Recalibrate Baseline</button>
                 </div>
             </section>
 

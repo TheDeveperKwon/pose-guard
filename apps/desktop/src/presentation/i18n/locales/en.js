@@ -6,7 +6,9 @@ export default {
         stopMonitoring: 'Stop Monitoring',
         settings: 'Settings',
         hideSettings: 'Hide Settings',
-        recalibrateBaseline: 'Recalibrate Baseline'
+        recalibrateBaseline: 'Recalibrate Baseline',
+        recalibrateCoachmark: 'If tracking feels off, use Recalibrate Baseline here.',
+        coachmarkDismiss: 'Got it'
     },
     status: {
         ready: 'Ready',

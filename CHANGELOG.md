@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.11 (2026-03-02)
+
+### Changed
+- Move `Recalibrate Baseline` out of advanced settings and expose it in the main control area for better discoverability.
+- Add one-time in-context coachmark guidance when monitoring starts so users can quickly find the recalibration action.
+
 ## v1.0.10 (2026-03-02)
 
 ### Added

@@ -12,6 +12,7 @@ import {
 
 const SETTINGS_STORAGE_KEY = 'pg_settings_v1';
 const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
+const CALIBRATE_COACHMARK_STORAGE_KEY = 'pg_calibrate_coachmark_seen_v1';
 const DEFAULT_SENSITIVITY = 50;
 const DEFAULT_SHOW_CAMERA = false;
 const DEFAULT_POWER_SAVE = false;
@@ -39,6 +40,9 @@ const btnMonitorToggle = document.getElementById('btn-monitor-toggle');
 const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const btnCalibrate = document.getElementById('btn-calibrate');
 const advancedSettings = document.getElementById('advanced-settings');
+const calibrateCoachmark = document.getElementById('calibrate-coachmark');
+const calibrateCoachmarkText = document.getElementById('calibrate-coachmark-text');
+const btnCalibrateCoachmarkDismiss = document.getElementById('btn-calibrate-coachmark-dismiss');
 
 const statusIndicator = document.getElementById('status-indicator');
 const statusText = document.getElementById('status-text');
@@ -163,6 +167,8 @@ function applyLanguageToUi() {
     setElementText(onboardingItem3Body, t('onboarding.item3Body'));
     setElementText(btnOnboardingConfirm, t('onboarding.confirm'));
     setElementText(btnCalibrate, t('controls.recalibrateBaseline'));
+    setElementText(calibrateCoachmarkText, t('controls.recalibrateCoachmark'));
+    setElementText(btnCalibrateCoachmarkDismiss, t('controls.coachmarkDismiss'));
 
     if (inputLanguage) {
         const koOption = inputLanguage.querySelector('option[value="ko"]');
@@ -432,6 +438,11 @@ function setMonitorUi(active) {
         : t('controls.startMonitoring');
     btnMonitorToggle.classList.toggle('is-stop', active);
     btnCalibrate.disabled = !active;
+    if (active) {
+        maybeShowCalibrateCoachmark();
+    } else {
+        hideCalibrateCoachmark(false);
+    }
 }
 
 function toggleSettingsPanel(forceOpen) {
@@ -485,6 +496,36 @@ function markOnboardingSeen() {
     } catch {
         // Ignore storage errors.
     }
+}
+
+function hasSeenCalibrateCoachmark() {
+    try {
+        return window.localStorage.getItem(CALIBRATE_COACHMARK_STORAGE_KEY) === '1';
+    } catch {
+        return false;
+    }
+}
+
+function markCalibrateCoachmarkSeen() {
+    try {
+        window.localStorage.setItem(CALIBRATE_COACHMARK_STORAGE_KEY, '1');
+    } catch {
+        // Ignore storage errors.
+    }
+}
+
+function hideCalibrateCoachmark(markSeen = false) {
+    if (!calibrateCoachmark) return;
+    calibrateCoachmark.hidden = true;
+    if (markSeen) {
+        markCalibrateCoachmarkSeen();
+    }
+}
+
+function maybeShowCalibrateCoachmark() {
+    if (!calibrateCoachmark) return;
+    if (hasSeenCalibrateCoachmark()) return;
+    calibrateCoachmark.hidden = false;
 }
 
 function closeOnboarding() {
@@ -636,7 +677,14 @@ btnSettingsToggle.addEventListener('click', () => {
 
 btnCalibrate.addEventListener('click', () => {
     monitorService.setBaseline();
+    hideCalibrateCoachmark(true);
 });
+
+if (btnCalibrateCoachmarkDismiss) {
+    btnCalibrateCoachmarkDismiss.addEventListener('click', () => {
+        hideCalibrateCoachmark(true);
+    });
+}
 
 // Settings Events
 inputLanguage.addEventListener('change', (e) => {

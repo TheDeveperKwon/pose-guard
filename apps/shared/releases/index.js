@@ -1,5 +1,13 @@
 export const RELEASES = [
   {
+    version: "v1.0.11",
+    date: "2026-03-02",
+    items: [
+      "Move desktop `Recalibrate Baseline` action into the main controls to improve discoverability.",
+      "Add one-time contextual coachmark guidance for recalibration during monitoring."
+    ]
+  },
+  {
     version: "v1.0.10",
     date: "2026-03-02",
     items: [
