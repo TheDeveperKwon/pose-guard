@@ -1,0 +1,10 @@
+{
+  "cameraPermissionTitle": "Camera Permission Required",
+  "cameraPermissionMessage": "PoseGuard Lite camera access was not granted.",
+  "cameraPermissionDetail": "Allow camera access in macOS System Settings.",
+  "openSystemSettings": "Open System Settings",
+  "later": "Later",
+  "trayTooltip": "PoseGuard Lite",
+  "trayShowApp": "Show App",
+  "trayQuit": "Quit"
+}

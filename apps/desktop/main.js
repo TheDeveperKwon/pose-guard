@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, systemPreferences, dialog, shell, ipcMain, screen } = require('electron');
 const path = require('path');
+const { getMainText } = require('./src/i18n/main');
 
 let mainWindow;
 let tray;
@@ -7,6 +8,10 @@ let overlayWindow;
 let overlayHideTimer = null;
 
 const OVERLAY_PULSE_MS = 1200;
+
+function mt(key) {
+    return getMainText(app, key);
+}
 
 async function requestCameraPermission() {
     if (process.platform !== 'darwin') {
@@ -24,10 +29,10 @@ async function requestCameraPermission() {
     if (!granted) {
         dialog.showMessageBox({
             type: 'warning',
-            title: '카메라 권한 필요',
-            message: 'PoseGuard Lite 카메라 접근이 허용되지 않았습니다.',
-            detail: '메뉴에서 macOS 보안 설정의 카메라 권한을 허용해 주세요.',
-            buttons: ['시스템 설정 열기', '나중에'],
+            title: mt('cameraPermissionTitle'),
+            message: mt('cameraPermissionMessage'),
+            detail: mt('cameraPermissionDetail'),
+            buttons: [mt('openSystemSettings'), mt('later')],
             defaultId: 0,
             cancelId: 1
         }).then((res) => {
@@ -178,11 +183,11 @@ function createTray() {
     const icon = nativeImage.createFromPath(iconPath);
     
     tray = new Tray(icon);
-    tray.setToolTip('PoseGuard Lite');
+    tray.setToolTip(mt('trayTooltip'));
 
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: 'Show App',
+            label: mt('trayShowApp'),
             click: () => {
                 if (!mainWindow) return;
                 if (mainWindow.isMinimized()) mainWindow.restore();
@@ -191,7 +196,7 @@ function createTray() {
             }
         },
         { type: 'separator' },
-        { label: 'Quit', click: () => app.quit() }
+        { label: mt('trayQuit'), click: () => app.quit() }
     ]);
 
     tray.setContextMenu(contextMenu);

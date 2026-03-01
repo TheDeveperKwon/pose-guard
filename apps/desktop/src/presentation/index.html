@@ -15,7 +15,7 @@
         <header class="app-header">
             <div>
                 <h1>PoseGuard Lite</h1>
-                <p class="header-subtitle">Monitor posture with minimal distractions</p>
+                <p id="header-subtitle" class="header-subtitle">Monitor posture with minimal distractions</p>
             </div>
             <div class="status-pill">
                 <div id="status-indicator" class="status-dot"></div>
@@ -27,7 +27,7 @@
             <div class="video-container">
                 <video id="webcam" playsinline></video>
                 <canvas id="output_canvas"></canvas>
-                <p class="video-tip">Camera preview is hidden by default.</p>
+                <p id="video-tip" class="video-tip">Camera preview is hidden by default.</p>
             </div>
 
             <div class="controls">
@@ -48,13 +48,30 @@
             </div>
 
             <section id="advanced-settings" class="settings" hidden>
-                <h3>Advanced Settings</h3>
-                <p class="settings-note">Click or hover the ? icons for explanations.</p>
+                <h3 id="settings-title">Advanced Settings</h3>
+                <p id="settings-note" class="settings-note">Click or hover the ? icons for explanations.</p>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
-                        <label for="input-show-camera">Show Camera</label>
+                        <label id="label-language" for="input-language">Language</label>
                         <button
                             type="button"
+                            id="help-language"
+                            class="help-tip"
+                            aria-label="Language help"
+                            data-help="Choose the app display language."
+                        >?</button>
+                    </div>
+                    <select id="input-language">
+                        <option value="ko">한국어</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div class="setting-group setting-inline">
+                    <div class="setting-label-row">
+                        <label id="label-show-camera" for="input-show-camera">Show Camera</label>
+                        <button
+                            type="button"
+                            id="help-show-camera"
                             class="help-tip"
                             aria-label="Show Camera help"
                             data-help="When off, your face is hidden and only posture overlay is shown."
@@ -64,9 +81,10 @@
                 </div>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
-                        <label for="input-visual-alert">Visual Alert</label>
+                        <label id="label-visual-alert" for="input-visual-alert">Visual Alert</label>
                         <button
                             type="button"
+                            id="help-visual-alert"
                             class="help-tip"
                             aria-label="Visual Alert help"
                             data-help="Shows a fullscreen edge glow when bad posture continues."
@@ -76,9 +94,10 @@
                 </div>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
-                        <label for="input-sound-alert">Sound Alert</label>
+                        <label id="label-sound-alert" for="input-sound-alert">Sound Alert</label>
                         <button
                             type="button"
+                            id="help-sound-alert"
                             class="help-tip"
                             aria-label="Sound Alert help"
                             data-help="Plays a short alert tone when bad posture continues."
@@ -88,9 +107,10 @@
                 </div>
                 <div class="setting-group setting-inline">
                     <div class="setting-label-row">
-                        <label for="input-power-save">Power Saving Mode</label>
+                        <label id="label-power-save" for="input-power-save">Power Saving Mode</label>
                         <button
                             type="button"
+                            id="help-power-save"
                             class="help-tip"
                             aria-label="Power Saving Mode help"
                             data-help="Hides preview rendering to reduce CPU and GPU usage."
@@ -100,9 +120,10 @@
                 </div>
                 <div class="setting-group">
                     <div class="setting-label-row">
-                        <label>Overall Sensitivity: <span id="label-sens">50</span></label>
+                        <label><span id="label-sens-text">Overall Sensitivity</span>: <span id="label-sens">50</span></label>
                         <button
                             type="button"
+                            id="help-sensitivity"
                             class="help-tip"
                             aria-label="Overall Sensitivity help"
                             data-help="Higher sensitivity reacts faster to posture changes."
@@ -112,9 +133,10 @@
                 </div>
                 <div class="setting-group">
                     <div class="setting-label-row">
-                        <label>Sound Volume: <span id="label-volume">0%</span></label>
+                        <label><span id="label-volume-text">Sound Volume</span>: <span id="label-volume">0%</span></label>
                         <button
                             type="button"
+                            id="help-volume"
                             class="help-tip"
                             aria-label="Sound Volume help"
                             data-help="Used when Sound Alert is enabled."
@@ -129,15 +151,15 @@
 
             <div class="stats">
                 <div class="stat-item">
-                    <span class="label">Turtle Neck:</span>
+                    <span id="label-turtle" class="label">Turtle Neck:</span>
                     <span id="val-turtle">--</span>
                 </div>
                 <div class="stat-item">
-                    <span class="label">Slouching:</span>
+                    <span id="label-slouch" class="label">Slouching:</span>
                     <span id="val-slouch">--</span>
                 </div>
                 <div class="stat-item">
-                    <span class="label">Text Neck:</span>
+                    <span id="label-text-neck" class="label">Text Neck:</span>
                     <span id="val-text">--</span>
                 </div>
             </div>
@@ -146,23 +168,23 @@
 
     <div id="onboarding-modal" class="onboarding-backdrop" hidden>
         <section class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
-            <p class="onboarding-kicker">WELCOME</p>
+            <p id="onboarding-kicker" class="onboarding-kicker">WELCOME</p>
             <h2 id="onboarding-title">PoseGuard Lite 시작 전에 확인하세요</h2>
-            <p class="onboarding-body">
+            <p id="onboarding-body" class="onboarding-body">
                 첫 사용자는 아래 3가지만 알면 바로 시작할 수 있습니다.
             </p>
             <ul class="onboarding-list">
                 <li>
-                    <strong>카메라 미리보기는 기본 OFF</strong><br>
-                    화면에는 사용자가 바로 노출되지 않고, 판정 결과만 먼저 보입니다.
+                    <strong id="onboarding-item-1-title">카메라 미리보기는 기본 OFF</strong><br>
+                    <span id="onboarding-item-1-body">화면에는 사용자가 바로 노출되지 않고, 판정 결과만 먼저 보입니다.</span>
                 </li>
                 <li>
-                    <strong>Start Monitoring을 누르면 자동 기준 자세 설정</strong><br>
-                    처음 몇 초 동안 정면 자세를 잡으면 기준이 자동으로 캘리브레이션됩니다.
+                    <strong id="onboarding-item-2-title">Start Monitoring을 누르면 자동 기준 자세 설정</strong><br>
+                    <span id="onboarding-item-2-body">처음 몇 초 동안 정면 자세를 잡으면 기준이 자동으로 캘리브레이션됩니다.</span>
                 </li>
                 <li>
-                    <strong>세부 설정은 필요할 때만</strong><br>
-                    기본 사용은 시작/중지 버튼만으로 충분하고, 나머지는 Settings에서 조정할 수 있습니다.
+                    <strong id="onboarding-item-3-title">세부 설정은 필요할 때만</strong><br>
+                    <span id="onboarding-item-3-body">기본 사용은 시작/중지 버튼만으로 충분하고, 나머지는 Settings에서 조정할 수 있습니다.</span>
                 </li>
             </ul>
             <div class="onboarding-actions">

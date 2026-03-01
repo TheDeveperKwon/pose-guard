@@ -4,6 +4,11 @@ import { CameraAdapter } from '../infrastructure/CameraAdapter.js';
 import { AudioAdapter } from '../infrastructure/AudioAdapter.js';
 import { Evaluator } from '../domain/Evaluator.js';
 import { SOUND_CONFIG } from '../config/constants.js';
+import {
+    detectRendererDefaultLanguage,
+    getText,
+    normalizeLanguage
+} from './i18n/index.js';
 
 const SETTINGS_STORAGE_KEY = 'pg_settings_v1';
 const ONBOARDING_STORAGE_KEY = 'pg_onboarding_seen_v1';
@@ -13,13 +18,16 @@ const DEFAULT_POWER_SAVE = false;
 const DEFAULT_VISUAL_ALERT = true;
 const DEFAULT_SOUND_ALERT = false;
 const DEFAULT_VOLUME = 0;
+const DEFAULT_LANGUAGE = detectRendererDefaultLanguage();
+let currentLanguage = DEFAULT_LANGUAGE;
 const DEFAULT_SETTINGS = {
     showCamera: DEFAULT_SHOW_CAMERA,
     visualAlert: DEFAULT_VISUAL_ALERT,
     soundAlert: DEFAULT_SOUND_ALERT,
     sensitivity: DEFAULT_SENSITIVITY,
     powerSave: DEFAULT_POWER_SAVE,
-    volume: DEFAULT_VOLUME
+    volume: DEFAULT_VOLUME,
+    language: DEFAULT_LANGUAGE
 };
 
 // DOM Elements
@@ -41,8 +49,32 @@ const calibrationStatus = document.getElementById('calibration-status');
 const calibrationLabel = document.getElementById('calibration-label');
 const calibrationPercent = document.getElementById('calibration-percent');
 const calibrationFill = document.getElementById('calibration-fill');
+const headerSubtitle = document.getElementById('header-subtitle');
+const videoTip = document.getElementById('video-tip');
+const settingsTitle = document.getElementById('settings-title');
+const settingsNote = document.getElementById('settings-note');
+const labelLanguage = document.getElementById('label-language');
+const labelShowCamera = document.getElementById('label-show-camera');
+const labelVisualAlert = document.getElementById('label-visual-alert');
+const labelSoundAlert = document.getElementById('label-sound-alert');
+const labelPowerSave = document.getElementById('label-power-save');
+const labelSensText = document.getElementById('label-sens-text');
+const labelVolumeText = document.getElementById('label-volume-text');
+const labelTurtle = document.getElementById('label-turtle');
+const labelSlouch = document.getElementById('label-slouch');
+const labelTextNeck = document.getElementById('label-text-neck');
+const onboardingKicker = document.getElementById('onboarding-kicker');
+const onboardingTitle = document.getElementById('onboarding-title');
+const onboardingBody = document.getElementById('onboarding-body');
+const onboardingItem1Title = document.getElementById('onboarding-item-1-title');
+const onboardingItem1Body = document.getElementById('onboarding-item-1-body');
+const onboardingItem2Title = document.getElementById('onboarding-item-2-title');
+const onboardingItem2Body = document.getElementById('onboarding-item-2-body');
+const onboardingItem3Title = document.getElementById('onboarding-item-3-title');
+const onboardingItem3Body = document.getElementById('onboarding-item-3-body');
 
 // Settings Elements
+const inputLanguage = document.getElementById('input-language');
 const inputShowCamera = document.getElementById('input-show-camera');
 const inputVisualAlert = document.getElementById('input-visual-alert');
 const inputSoundAlert = document.getElementById('input-sound-alert');
@@ -54,6 +86,13 @@ const labelVolume = document.getElementById('label-volume');
 const onboardingModal = document.getElementById('onboarding-modal');
 const btnOnboardingConfirm = document.getElementById('btn-onboarding-confirm');
 const helpTips = Array.from(document.querySelectorAll('.help-tip'));
+const helpLanguage = document.getElementById('help-language');
+const helpShowCamera = document.getElementById('help-show-camera');
+const helpVisualAlert = document.getElementById('help-visual-alert');
+const helpSoundAlert = document.getElementById('help-sound-alert');
+const helpPowerSave = document.getElementById('help-power-save');
+const helpSensitivity = document.getElementById('help-sensitivity');
+const helpVolume = document.getElementById('help-volume');
 
 // Initialize Adapters
 const cameraAdapter = new CameraAdapter(videoElement);
@@ -66,6 +105,106 @@ const evaluator = new Evaluator(null);
 
 let isPowerSaving = false;
 let isMonitoring = false;
+let lastStatusKey = 'status.ready';
+let lastStatusColor = 'gray';
+let lastCalibrationMessageKey = 'status.calibrating';
+
+function resolveStatusColor(color) {
+    return color === 'green'
+        ? '#4caf50'
+        : color === 'red'
+            ? '#f44336'
+            : color === 'blue'
+                ? '#2196f3'
+                : '#757575';
+}
+
+function t(key) {
+    return getText(currentLanguage, key);
+}
+
+function setElementText(element, value) {
+    if (!element) return;
+    element.textContent = value;
+}
+
+function setHelpCopy(element, labelKey, helpKey) {
+    if (!element) return;
+    element.setAttribute('aria-label', t(labelKey));
+    element.setAttribute('data-help', t(helpKey));
+}
+
+function applyLanguageToUi() {
+    document.documentElement.lang = currentLanguage;
+    setElementText(headerSubtitle, t('headerSubtitle'));
+    setElementText(videoTip, t('videoTip'));
+
+    setElementText(settingsTitle, t('settings.title'));
+    setElementText(settingsNote, t('settings.note'));
+    setElementText(labelLanguage, t('settings.language'));
+    setElementText(labelShowCamera, t('settings.showCamera'));
+    setElementText(labelVisualAlert, t('settings.visualAlert'));
+    setElementText(labelSoundAlert, t('settings.soundAlert'));
+    setElementText(labelPowerSave, t('settings.powerSave'));
+    setElementText(labelSensText, t('settings.sensitivity'));
+    setElementText(labelVolumeText, t('settings.volume'));
+    setElementText(labelTurtle, t('stats.turtleNeck'));
+    setElementText(labelSlouch, t('stats.slouching'));
+    setElementText(labelTextNeck, t('stats.textNeck'));
+
+    setElementText(onboardingKicker, t('onboarding.kicker'));
+    setElementText(onboardingTitle, t('onboarding.title'));
+    setElementText(onboardingBody, t('onboarding.body'));
+    setElementText(onboardingItem1Title, t('onboarding.item1Title'));
+    setElementText(onboardingItem1Body, t('onboarding.item1Body'));
+    setElementText(onboardingItem2Title, t('onboarding.item2Title'));
+    setElementText(onboardingItem2Body, t('onboarding.item2Body'));
+    setElementText(onboardingItem3Title, t('onboarding.item3Title'));
+    setElementText(onboardingItem3Body, t('onboarding.item3Body'));
+    setElementText(btnOnboardingConfirm, t('onboarding.confirm'));
+    setElementText(btnCalibrate, t('controls.recalibrateBaseline'));
+
+    if (inputLanguage) {
+        const koOption = inputLanguage.querySelector('option[value="ko"]');
+        const enOption = inputLanguage.querySelector('option[value="en"]');
+        if (koOption) {
+            koOption.textContent = t('settings.languageOptionKo');
+        }
+        if (enOption) {
+            enOption.textContent = t('settings.languageOptionEn');
+        }
+    }
+
+    setHelpCopy(helpLanguage, 'settings.helpLanguageLabel', 'settings.helpLanguage');
+    setHelpCopy(helpShowCamera, 'settings.helpShowCameraLabel', 'settings.helpShowCamera');
+    setHelpCopy(helpVisualAlert, 'settings.helpVisualAlertLabel', 'settings.helpVisualAlert');
+    setHelpCopy(helpSoundAlert, 'settings.helpSoundAlertLabel', 'settings.helpSoundAlert');
+    setHelpCopy(helpPowerSave, 'settings.helpPowerSaveLabel', 'settings.helpPowerSave');
+    setHelpCopy(helpSensitivity, 'settings.helpSensitivityLabel', 'settings.helpSensitivity');
+    setHelpCopy(helpVolume, 'settings.helpVolumeLabel', 'settings.helpVolume');
+
+    setMonitorUi(isMonitoring);
+    toggleSettingsPanel(!advancedSettings.hidden);
+    statusText.textContent = t(lastStatusKey);
+    statusIndicator.style.backgroundColor = resolveStatusColor(lastStatusColor);
+
+    if (!calibrationStatus.hidden) {
+        const percent = clampInt(calibrationPercent.textContent, 0, 100, 0);
+        calibrationLabel.textContent = t(lastCalibrationMessageKey);
+        calibrationPercent.textContent = `${percent}%`;
+    } else {
+        clearCalibrationProgress();
+    }
+}
+
+function setLanguage(value) {
+    const normalized = normalizeLanguage(value, DEFAULT_LANGUAGE);
+    currentLanguage = normalized;
+    if (inputLanguage) {
+        inputLanguage.value = normalized;
+    }
+    applyLanguageToUi();
+}
 
 function clampInt(value, min, max, fallback) {
     const parsed = Number.parseInt(value, 10);
@@ -91,6 +230,7 @@ function normalizeSettings(settings) {
             : hasLegacyMannerMode
                 ? !source.mannerMode
                 : DEFAULT_SOUND_ALERT,
+        language: normalizeLanguage(source.language, DEFAULT_LANGUAGE),
         sensitivity: clampInt(source.sensitivity, 0, 100, DEFAULT_SENSITIVITY),
         powerSave: typeof source.powerSave === 'boolean'
             ? source.powerSave
@@ -119,6 +259,7 @@ function persistSettings(settings) {
 
 function getCurrentSettings() {
     return normalizeSettings({
+        language: inputLanguage?.value,
         showCamera: inputShowCamera.checked,
         visualAlert: inputVisualAlert.checked,
         soundAlert: inputSoundAlert.checked,
@@ -162,10 +303,10 @@ function updateStatItem(element, isBad) {
     }
 
     if (isBad) {
-        element.textContent = 'WARNING';
+        element.textContent = t('stats.warning');
         element.style.color = '#f44336';
     } else {
-        element.textContent = 'Good';
+        element.textContent = t('stats.good');
         element.style.color = '#4caf50';
     }
 }
@@ -235,6 +376,7 @@ function setPowerSave(enabled) {
 
 function applyInitialSettings() {
     const settings = loadPersistedSettings();
+    setLanguage(settings.language);
     setSensitivity(settings.sensitivity);
     setVolume(settings.volume);
     setShowCamera(settings.showCamera);
@@ -285,7 +427,9 @@ function syncCanvasSizeToVideo() {
 
 function setMonitorUi(active) {
     isMonitoring = active;
-    btnMonitorToggle.textContent = active ? 'Stop Monitoring' : 'Start Monitoring';
+    btnMonitorToggle.textContent = active
+        ? t('controls.stopMonitoring')
+        : t('controls.startMonitoring');
     btnMonitorToggle.classList.toggle('is-stop', active);
     btnCalibrate.disabled = !active;
 }
@@ -294,7 +438,9 @@ function toggleSettingsPanel(forceOpen) {
     const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : advancedSettings.hidden;
     advancedSettings.hidden = !shouldOpen;
     btnSettingsToggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-    btnSettingsToggle.textContent = shouldOpen ? 'Hide Settings' : 'Settings';
+    btnSettingsToggle.textContent = shouldOpen
+        ? t('controls.hideSettings')
+        : t('controls.settings');
     if (!shouldOpen) {
         closeHelpTips();
     }
@@ -307,7 +453,8 @@ function setCalibrationProgress(progress, message) {
 
     const normalized = Math.max(0, Math.min(100, Math.round(progress)));
     calibrationStatus.hidden = false;
-    calibrationLabel.textContent = message || 'Calibrating...';
+    lastCalibrationMessageKey = message || 'status.calibrating';
+    calibrationLabel.textContent = t(message || 'status.calibrating');
     calibrationPercent.textContent = `${normalized}%`;
     calibrationFill.style.width = `${normalized}%`;
 }
@@ -318,7 +465,8 @@ function clearCalibrationProgress() {
     }
 
     calibrationStatus.hidden = true;
-    calibrationLabel.textContent = 'Calibrating...';
+    lastCalibrationMessageKey = 'status.calibrating';
+    calibrationLabel.textContent = t('status.calibrating');
     calibrationPercent.textContent = '0%';
     calibrationFill.style.width = '0%';
 }
@@ -392,14 +540,10 @@ function initializeOnboarding() {
 // View Object
 const view = {
     updateStatus: (text, color) => {
-        statusText.textContent = text;
-        statusIndicator.style.backgroundColor = color === 'green'
-            ? '#4caf50'
-            : color === 'red'
-                ? '#f44336'
-                : color === 'blue'
-                    ? '#2196f3'
-                    : '#757575';
+        lastStatusKey = text;
+        lastStatusColor = color;
+        statusText.textContent = t(text);
+        statusIndicator.style.backgroundColor = resolveStatusColor(color);
     },
 
     render: (posture, evaluation) => {
@@ -469,7 +613,7 @@ btnMonitorToggle.addEventListener('click', async () => {
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         } else {
             if (!window.Pose) {
-                view.updateStatus('MediaPipe not loaded', 'red');
+                view.updateStatus('status.mediaPipeNotLoaded', 'red');
                 throw new Error('MediaPipe is not available');
             }
 
@@ -479,7 +623,7 @@ btnMonitorToggle.addEventListener('click', async () => {
         }
     } catch (error) {
         console.error('Failed to toggle monitoring:', error);
-        view.updateStatus('Camera Error', 'red');
+        view.updateStatus('status.cameraError', 'red');
         setMonitorUi(false);
     } finally {
         btnMonitorToggle.disabled = false;
@@ -495,6 +639,11 @@ btnCalibrate.addEventListener('click', () => {
 });
 
 // Settings Events
+inputLanguage.addEventListener('change', (e) => {
+    setLanguage(e.target.value);
+    saveCurrentSettings();
+});
+
 inputShowCamera.addEventListener('change', (e) => {
     if (isPowerSaving) return;
     setShowCamera(e.target.checked);
@@ -538,5 +687,5 @@ toggleSettingsPanel(false);
 clearCalibrationProgress();
 applyInitialSettings();
 initializeHelpTips();
-view.updateStatus('Ready', 'gray');
+view.updateStatus('status.ready', 'gray');
 initializeOnboarding();

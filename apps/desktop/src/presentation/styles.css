@@ -330,6 +330,21 @@ button:disabled {
     accent-color: var(--accent-color);
 }
 
+.setting-inline select {
+    min-width: 120px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--text-color);
+    font-size: 0.82rem;
+}
+
+.setting-inline select:focus-visible {
+    outline: 2px solid rgba(76, 175, 80, 0.65);
+    outline-offset: 1px;
+}
+
 .setting-group input[type="range"] {
     width: 100%;
 }

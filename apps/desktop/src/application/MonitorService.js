@@ -40,15 +40,15 @@ export class MonitorService {
             this.noUserStatusShown = false;
             this.calibrationStartTime = null;
             this.lastCalibrationProgress = -1;
-            this.view.updateStatus("Calibrating...", "blue");
+            this.view.updateStatus("status.calibrating", "blue");
             this.view.updateCalibrationProgress?.(
                 0,
-                "Keep your shoulders and face in frame"
+                "calibration.keepShouldersFace"
             );
             this.loop();
         } catch (error) {
             console.error("Failed to start monitoring:", error);
-            this.view.updateStatus("Camera Error", "red");
+            this.view.updateStatus("status.cameraError", "red");
             this.isMonitoring = false;
             this.badPostureStartTime = null;
             this.shouldCaptureBaseline = false;
@@ -61,7 +61,7 @@ export class MonitorService {
     stop() {
         this.isMonitoring = false;
         this.cameraAdapter.stop();
-        this.view.updateStatus("Stopped", "gray");
+        this.view.updateStatus("status.stopped", "gray");
         this.badPostureStartTime = null;
         this.shouldCaptureBaseline = false;
         this.calibrationStartTime = null;
@@ -118,10 +118,10 @@ export class MonitorService {
         this.shouldCaptureBaseline = true;
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
-        this.view.updateStatus("Calibrating...", "blue");
+        this.view.updateStatus("status.calibrating", "blue");
         this.view.updateCalibrationProgress?.(
             0,
-            "Recalibrating... hold steady for a moment"
+            "calibration.recalibratingHold"
         );
     }
 
@@ -130,7 +130,7 @@ export class MonitorService {
 
         if (!Array.isArray(landmarks) || landmarks.length === 0) {
             if (!this.noUserStatusShown) {
-                this.view.updateStatus("No User Detected", "gray");
+                this.view.updateStatus("status.noUserDetected", "gray");
                 this.noUserStatusShown = true;
             }
             if (this.shouldCaptureBaseline) {
@@ -138,7 +138,7 @@ export class MonitorService {
                 this.lastCalibrationProgress = -1;
                 this.view.updateCalibrationProgress?.(
                     0,
-                    "No user detected. Face the camera with shoulders visible"
+                    "calibration.noUserKeepShoulders"
                 );
             }
             this.badPostureStartTime = null;
@@ -161,10 +161,10 @@ export class MonitorService {
             if (!sample) {
                 this.calibrationStartTime = null;
                 this.lastCalibrationProgress = -1;
-                this.view.updateStatus("Calibrating...", "blue");
+                this.view.updateStatus("status.calibrating", "blue");
                 this.view.updateCalibrationProgress?.(
                     0,
-                    "Keep your full face and shoulders in frame"
+                    "calibration.keepFullFaceShoulders"
                 );
                 this.view.render(null, null);
                 return;
@@ -185,12 +185,12 @@ export class MonitorService {
                 this.view.updateCalibrationProgress?.(
                     progress,
                     progress < 100
-                        ? "Calibrating... hold your posture"
-                        : "Applying baseline..."
+                        ? "calibration.holdPosture"
+                        : "calibration.applyingBaseline"
                 );
             }
 
-            this.view.updateStatus("Calibrating...", "blue");
+            this.view.updateStatus("status.calibrating", "blue");
             this.view.render(null, null);
 
             if (elapsed < CALIBRATION_DURATION_MS) {
@@ -204,18 +204,18 @@ export class MonitorService {
             if (updated) {
                 this.shouldCaptureBaseline = false;
                 this.view.clearCalibrationProgress?.();
-                this.view.updateStatus("Monitoring", "green");
+                this.view.updateStatus("status.monitoring", "green");
             } else {
                 this.view.updateCalibrationProgress?.(
                     0,
-                    "Calibration failed. Keep shoulders visible and retry"
+                    "calibration.failedRetry"
                 );
             }
             return;
         }
 
         if (wasNoUser) {
-            this.view.updateStatus("Monitoring", "green");
+            this.view.updateStatus("status.monitoring", "green");
         }
 
         const evaluation = this.evaluator.evaluate(currentPosture);

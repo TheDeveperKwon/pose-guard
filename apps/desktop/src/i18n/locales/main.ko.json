@@ -1,0 +1,10 @@
+{
+  "cameraPermissionTitle": "카메라 권한 필요",
+  "cameraPermissionMessage": "PoseGuard Lite 카메라 접근이 허용되지 않았습니다.",
+  "cameraPermissionDetail": "메뉴에서 macOS 보안 설정의 카메라 권한을 허용해 주세요.",
+  "openSystemSettings": "시스템 설정 열기",
+  "later": "나중에",
+  "trayTooltip": "PoseGuard Lite",
+  "trayShowApp": "앱 열기",
+  "trayQuit": "종료"
+}

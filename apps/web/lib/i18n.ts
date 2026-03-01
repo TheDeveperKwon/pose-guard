@@ -88,7 +88,7 @@ const ko: Copy = {
     localeLabel: "언어 변경"
   },
   hero: {
-    title: "저전력, 고성능 자세 모니터링",
+    title: "실시간 자세 모니터링 알림",
     subtitle:
       "PoseGuard는 실시간 자세 분석을 통해 거북목/구부정/텍스트넥을 감지하고 집중 흐름을 방해하지 않도록 조용하게 알려줍니다.",
     ctaDownload: "앱 다운로드",
@@ -238,7 +238,7 @@ const en: Copy = {
     localeLabel: "Language switcher"
   },
   hero: {
-    title: "Low-power, high-performance posture monitoring",
+    title: "Real-time posture monitoring alerts",
     subtitle:
       "PoseGuard detects turtle neck, slouching, and text neck in real time, then alerts quietly without breaking your focus.",
     ctaDownload: "Download App",
