@@ -1,11 +1,11 @@
 # PoseGuard Lite (Desktop)
 
-문서 이동: [프로젝트 전체](../../README.md) | [웹 문서](../web/README.md) | **데스크톱 (한국어)** | [English](./README.en.md)
+Docs: [Project README (EN)](../../README.md) | [프로젝트 개요 (KO)](../../README.ko.md) | [Web README (EN)](../web/README.md) | [웹 문서 (KO)](../web/README.ko.md) | **English** | [한국어](./README.ko.md)
 
-PoseGuard Lite는 Electron + MediaPipe Pose 기반 자세 모니터링 앱입니다.  
-웹캠 랜드마크를 기준 자세(Baseline)와 비교해 `Turtle Neck`, `Slouching`, `Text Neck` 상태를 실시간으로 보여줍니다.
+PoseGuard Lite is an Electron + MediaPipe Pose desktop app for posture monitoring.  
+It compares webcam landmarks against a calibrated baseline and reports `Turtle Neck`, `Slouching`, and `Text Neck` in real time.
 
-## 빠른 시작 (1분)
+## Quick Start (1 minute)
 
 ```bash
 cd apps/desktop
@@ -13,173 +13,173 @@ npm install
 npm start
 ```
 
-처음 실행할 때:
-1. 카메라 권한을 허용합니다.
-2. `Start Monitoring`을 누르고 1~2초 정면 자세를 유지합니다.
-3. 필요하면 `Settings`에서 알림/민감도를 조정합니다.
+On first launch:
+1. Allow camera access.
+2. Click `Start Monitoring` and hold a neutral posture for 1-2 seconds.
+3. Adjust alert and sensitivity options in `Settings` if needed.
 
-참고:
-- `postinstall`, `start`, `build`, `dist` 실행 시 MediaPipe 자산이 자동 동기화됩니다.
-- 수동 동기화: `npm run sync:mediapipe`
+Notes:
+- MediaPipe assets are auto-synced during `postinstall`, `start`, `build`, and `dist`.
+- Manual sync: `npm run sync:mediapipe`
 
-## 사용 가이드
+## Usage Guide
 
-### 1) 시작 전 체크
+### 1) Pre-check
 
-- 얼굴 + 어깨가 카메라 프레임에 함께 들어오게 맞춰주세요.
-- 화면이 너무 어둡거나 역광이면 인식 정확도가 떨어질 수 있습니다.
-- 여러 사람이 잡히면 화면 중앙/가까운 사용자가 우선 추적됩니다.
+- Keep your face and shoulders visible in frame.
+- Very dark scenes or strong backlight can reduce detection quality.
+- When multiple people are visible, the app prioritizes a primary user.
 
-### 2) 모니터링 시작/중지
+### 2) Start and stop monitoring
 
-1. `Start Monitoring` 클릭
-2. 상태가 `Calibrating...`일 때 자세를 고정
-3. 상태가 `Monitoring`으로 바뀌면 추적 시작
-4. 중지할 때 `Stop Monitoring` 클릭
+1. Click `Start Monitoring`
+2. Keep posture steady while status shows `Calibrating...`
+3. Monitoring begins when status changes to `Monitoring`
+4. Click `Stop Monitoring` to stop
 
-재보정이 필요하면 `Recalibrate Baseline` 버튼을 눌러 기준 자세를 다시 잡습니다.
+Use `Recalibrate Baseline` any time you want to reset the baseline posture.
 
-### 3) 상태와 알림 해석
+### 3) Understand status and alerts
 
-- 상태 카드
-  - `Good`: 기준 대비 정상 범위
-  - `WARNING`: BAD 상태 감지
-- 알림 트리거
-  - BAD 상태가 `DEBOUNCE_TIME`(기본 2000ms) 이상 유지될 때 알림 발생
-  - 반복 알림은 `COOLDOWN_MS`(기본 1500ms) 쿨다운 적용
+- Status cards
+  - `Good`: within normal range vs baseline
+  - `WARNING`: BAD posture detected
+- Alert trigger policy
+  - BAD posture must last longer than `DEBOUNCE_TIME` (default 2000ms)
+  - Repeated alerts are rate-limited by `COOLDOWN_MS` (default 1500ms)
 
-### 4) 설정 가이드
+### 4) Settings guide
 
-설정값은 변경 즉시 로컬에 저장되며, 앱을 다시 실행해도 유지됩니다.
+Settings are saved immediately to local storage and restored on next launch.
 
-| 항목 | 기본값 | 설명 | 추천 사용 |
+| Option | Default | Meaning | Recommended usage |
 | --- | --- | --- | --- |
-| Show Camera | OFF | 카메라 원본 미리보기 표시 | 프라이버시 우선이면 OFF |
-| Visual Alert | ON | BAD 지속 시 가장자리 글로우 오버레이 | 기본 유지 권장 |
-| Sound Alert | OFF | BAD 지속 시 소리 알림 추가 | 조용한 공간이면 OFF |
-| Sound Volume | 0% | Sound Alert 볼륨 | Sound Alert ON 시 조정 |
-| Overall Sensitivity | 50 | 높을수록 경고를 더 빠르게 감지 | 오탐 많으면 낮추기 |
-| Power Saving Mode | OFF | 렌더링/미리보기 최소화 | 배터리 절약 시 ON |
+| Show Camera | OFF | Shows raw camera preview | Keep OFF for privacy |
+| Visual Alert | ON | Edge-glow overlay for sustained BAD posture | Keep ON by default |
+| Sound Alert | OFF | Adds audio alert for sustained BAD posture | Turn ON in private spaces |
+| Sound Volume | 0% | Alert volume when Sound Alert is ON | Increase only when needed |
+| Overall Sensitivity | 50 | Higher value reacts faster | Lower if too many false positives |
+| Power Saving Mode | OFF | Minimizes preview/rendering load | Turn ON for battery saving |
 
-팁:
-- 설정 항목의 `?` 아이콘은 클릭/hover로 도움말을 볼 수 있습니다.
-- `Sound Alert`가 꺼져 있으면 볼륨 슬라이더는 비활성화됩니다.
+Tips:
+- `?` icons in Settings support click/hover help.
+- When `Sound Alert` is OFF, the volume slider is disabled.
 
-### 5) 추천 프리셋
+### 5) Recommended presets
 
-- 사무실/도서관: `Visual Alert ON`, `Sound Alert OFF`, `Sensitivity 45~55`
-- 재택 집중 모드: `Visual Alert ON`, `Sound Alert ON`, `Volume 20~40%`, `Sensitivity 55~65`
-- 배터리 우선: `Power Saving ON`, 필요 시 `Show Camera OFF` 유지
+- Office/library: `Visual Alert ON`, `Sound Alert OFF`, `Sensitivity 45-55`
+- Home focus mode: `Visual Alert ON`, `Sound Alert ON`, `Volume 20-40%`, `Sensitivity 55-65`
+- Battery-first: `Power Saving ON`, usually keep `Show Camera OFF`
 
-## 문제 해결
+## Troubleshooting
 
-### 카메라가 안 켜짐
+### Camera does not start
 
-- macOS: 시스템 설정 > 개인정보 보호 및 보안 > 카메라에서 앱 권한 확인
-- 다른 화상회의 앱이 카메라를 점유 중이면 종료 후 다시 시도
+- macOS: System Settings > Privacy & Security > Camera, then allow the app
+- Close other apps that may be using the camera (video meeting tools, etc.)
 
-### `No User Detected`가 계속 표시됨
+### `No User Detected` keeps showing
 
-- 얼굴/어깨가 프레임 안에 모두 보이는지 확인
-- 조명 확보, 카메라와 거리 조정 후 `Recalibrate Baseline` 실행
+- Make sure both face and shoulders are visible
+- Improve lighting and camera distance, then run `Recalibrate Baseline`
 
-### 소리 알림이 안 들림
+### No sound alert
 
-- `Sound Alert`가 ON인지 확인
-- `Sound Volume`이 0%가 아닌지 확인
-- OS 출력 장치/볼륨이 음소거인지 확인
+- Check if `Sound Alert` is ON
+- Check if `Sound Volume` is greater than 0%
+- Check OS output device and mute state
 
-### 시각 알림이 잘 안 보임
+### Visual alert is hard to notice
 
-- `Visual Alert`가 ON인지 확인
-- 전체화면 앱 위에서 투명 오버레이 표시가 제한되는 환경인지 확인
+- Confirm `Visual Alert` is ON
+- Some fullscreen app environments may limit transparent overlay visibility
 
-## 핵심 기능
+## Key Features
 
-- 실시간 자세 추정 + 랜드마크 오버레이 렌더링
-- 다중 인원 감지 시 주요 사용자 1인 선택 추적
-- 모니터링 시작 시 자동 Baseline 캘리브레이션 (약 1.8초)
-- 재캘리브레이션 진행률(%) 및 상태 메시지 표시
-- 첫 실행 1회 온보딩 모달
-- 최소화 시 트레이 아이콘 생성, 창 닫기 시 앱 종료
+- Real-time pose estimation with landmark overlay rendering
+- Primary-user selection when multiple people are detected
+- Automatic baseline calibration at monitor start (about 1.8s)
+- Recalibration progress (%) and status messaging
+- One-time onboarding modal on first launch
+- Tray icon on minimize, app quits on window close
 
-## 기술 구성
+## Tech Stack
 
-- Electron (메인/렌더러 분리 + preload 브릿지)
+- Electron (main/renderer split with preload bridge)
 - MediaPipe Pose
 - Vanilla JavaScript (ES Modules)
-- 공유 모듈
-  - `apps/shared/posture`: 샘플 추출/자세 평가 로직
-  - `apps/shared/policy`: 모니터링/사운드 정책값
+- Shared modules
+  - `apps/shared/posture`: sample extraction and posture evaluation
+  - `apps/shared/policy`: monitoring and sound policy constants
 
-## 폴더 구조
+## Directory Layout
 
 ```text
 apps/desktop
-├─ main.js                              # Electron 메인 프로세스, 트레이, 시각 알람 오버레이
+├─ main.js                              # Electron main process, tray, visual-alert overlay
 ├─ scripts/
-│  └─ sync-mediapipe-assets.js          # node_modules -> vendor 정적 자산 동기화
+│  └─ sync-mediapipe-assets.js          # Sync static assets from node_modules to vendor
 ├─ src
-│  ├─ application/MonitorService.js     # 모니터링 루프/캘리브레이션/알림 흐름
+│  ├─ application/MonitorService.js     # Monitoring loop, calibration, alert flow
 │  ├─ domain/
-│  │  ├─ Evaluator.js                   # shared posture 로직 기반 판정
-│  │  └─ Posture.js                     # 랜드마크 샘플 변환
+│  │  ├─ Evaluator.js                   # Evaluation using shared posture logic
+│  │  └─ Posture.js                     # Landmark-to-sample conversion
 │  ├─ infrastructure/
-│  │  ├─ CameraAdapter.js               # getUserMedia 처리
-│  │  ├─ MediaPipeAdapter.js            # Pose 초기화/결과 선택
-│  │  └─ AudioAdapter.js                # WebAudio 알림음 생성
+│  │  ├─ CameraAdapter.js               # getUserMedia handling
+│  │  ├─ MediaPipeAdapter.js            # Pose init and result selection
+│  │  └─ AudioAdapter.js                # WebAudio tone generation
 │  ├─ presentation/
-│  │  ├─ index.html                     # 메인 UI
-│  │  ├─ overlay.html                   # 시각 알람 글로우 오버레이
-│  │  ├─ view.js                        # UI 이벤트/렌더링 연결
-│  │  └─ vendor/mediapipe               # 동기화된 MediaPipe 정적 자산
-│  └─ shared/                           # apps/shared re-export shim
+│  │  ├─ index.html                     # Main UI
+│  │  ├─ overlay.html                   # Full-screen glow overlay for visual alerts
+│  │  ├─ view.js                        # UI events and rendering bridge
+│  │  └─ vendor/mediapipe               # Synced MediaPipe static assets
+│  └─ shared/                           # Re-export shim to apps/shared
 └─ package.json
 ```
 
-## 사전 요구사항
+## Prerequisites
 
-- Node.js 18 이상 권장
-- macOS/Windows 카메라 권한 허용
-- 최초 설치 시 네트워크 필요 (`npm install`)
+- Node.js 18+ recommended
+- Camera permission granted on macOS/Windows
+- Network required for first install (`npm install`)
 
-## 빌드
+## Build
 
 ```bash
 cd apps/desktop
 npm install
-npm run build   # unpacked directory 출력
-npm run dist    # 설치/배포용 아티팩트 생성
+npm run build   # unpacked directory output
+npm run dist    # installer/release artifacts
 ```
 
-`electron-builder` 타깃:
+`electron-builder` targets:
 - macOS: `dmg`, `zip`
 - Windows: `nsis`, `zip`
-- Linux: `AppImage`, `deb` (로컬 설정 기준)
+- Linux: `AppImage`, `deb` (local config)
 
-## 판정 로직 요약
+## Posture Evaluation Summary
 
-`extractPostureSample()`이 랜드마크에서 아래 지표를 추출합니다.
+`extractPostureSample()` derives:
 
-- `zoom`: 양쪽 눈 거리
-- `height`: 코와 양쪽 어깨 중간점의 높이 차
-- `pitch`: 코와 양쪽 귀 중간점의 y축 차
+- `zoom`: distance between eyes
+- `height`: vertical distance between nose and shoulder midpoint
+- `pitch`: y-axis difference between nose and ear midpoint
 
-평가 시 계산식:
+Evaluation metrics:
 
 - `zoomRatio = current.zoom / baseline.zoom`
 - `heightRatio = current.height / baseline.height`
 - `pitchDiff = current.pitch - baseline.pitch`
 
-민감도(0~100)에 따라 임계값을 보정해 `NORMAL`/`BAD`를 판정합니다.
+Sensitivity (0-100) adjusts thresholds to produce `NORMAL` or `BAD`.
 
-## 기본 정책값
+## Default Policy Values
 
-출처:
+Source files:
 - `apps/shared/posture/index.js`
 - `apps/shared/policy/index.js`
 
-값:
+Values:
 - `DEFAULT_THRESHOLDS`
   - `TURTLE_NECK: 1.2`
   - `SLOUCHING: 0.8`
@@ -190,26 +190,26 @@ npm run dist    # 설치/배포용 아티팩트 생성
 - `SOUND_CONFIG`
   - `COOLDOWN_MS: 1500`ms
 
-UI 기본값(`src/presentation/view.js`):
+UI defaults (`src/presentation/view.js`):
 - `Visual Alert`: ON
 - `Sound Alert`: OFF
 - `Sound Volume`: `0%`
 
-## 권한/프라이버시 동작
+## Privacy and Permission Behavior
 
-- 카메라 영상은 로컬에서만 처리됩니다.
-- 카메라 미리보기는 기본 숨김이며, 추정 오버레이는 유지됩니다.
-- `Visual Alert`가 켜져 있으면 OS 레벨 투명 오버레이 창으로 시각 알림을 표시합니다.
-- `Sound Alert`를 함께 켜면 동일 조건에서 소리 알림도 추가 재생됩니다.
-- 창 닫기(`close`)는 최소화가 아니라 앱 종료 동작입니다.
+- Camera data is processed locally.
+- Camera preview is hidden by default; posture overlay can still render.
+- When `Visual Alert` is enabled, alerts use an OS-level transparent overlay window.
+- If `Sound Alert` is also enabled, audio alerts are played under the same BAD posture condition.
+- Window `close` quits the app (not minimize-to-tray).
 
-## 릴리즈
+## Release
 
-GitHub Actions(`.github/workflows/release.yml`) 기준:
-- 태그 `v*` 푸시 시 macOS/Windows 빌드 + GitHub Release 업로드
-- 로컬 `npm run dist`는 `--publish never`로 업로드 없이 아티팩트만 생성
+Based on `.github/workflows/release.yml`:
+- Pushing a `v*` tag triggers macOS/Windows build and GitHub Release upload
+- Local `npm run dist` uses `--publish never` (build only, no upload)
 
-예시:
+Example:
 
 ```bash
 git tag v1.0.9
@@ -218,5 +218,5 @@ git push origin v1.0.9
 
 ## Known Gaps
 
-- 사용자 설정의 기기 간 동기화 미지원
-- 자동 테스트 코드 부재 (`npm test`는 placeholder)
+- No cross-device sync for user settings
+- No automated tests yet (`npm test` is a placeholder)
