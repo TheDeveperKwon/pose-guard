@@ -2,6 +2,7 @@ import { Posture } from '../domain/Posture.js';
 import { MONITORING_CONFIG, SOUND_CONFIG } from '../config/constants.js';
 
 const CALIBRATION_DURATION_MS = 1800;
+const CALIBRATION_SAMPLE_GRACE_MS = 1000;
 
 export class MonitorService {
     constructor(cameraAdapter, mediaPipeAdapter, audioAdapter, evaluator, view) {
@@ -22,6 +23,11 @@ export class MonitorService {
         this.noUserStatusShown = false;
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
+        this.calibrationLastSample = null;
+        this.calibrationLastSampleAt = 0;
+        this.rafId = null;
+        this.loopToken = 0;
+        this.isFrameInFlight = false;
 
         // Bind the callback for MediaPipe results
         this.mediaPipeAdapter.setCallback(this.onPoseDetected.bind(this));
@@ -40,12 +46,19 @@ export class MonitorService {
             this.noUserStatusShown = false;
             this.calibrationStartTime = null;
             this.lastCalibrationProgress = -1;
+            this.calibrationLastSample = null;
+            this.calibrationLastSampleAt = 0;
+            this.lastFrameTime = 0;
+            this.isFrameInFlight = false;
+            this.mediaPipeAdapter.resetTracking?.();
+            this.loopToken += 1;
+            const activeLoopToken = this.loopToken;
             this.view.updateStatus("status.calibrating", "blue");
             this.view.updateCalibrationProgress?.(
                 0,
                 "calibration.keepShouldersFace"
             );
-            this.loop();
+            this.loop(activeLoopToken);
         } catch (error) {
             console.error("Failed to start monitoring:", error);
             this.view.updateStatus("status.cameraError", "red");
@@ -54,18 +67,29 @@ export class MonitorService {
             this.shouldCaptureBaseline = false;
             this.calibrationStartTime = null;
             this.lastCalibrationProgress = -1;
+            this.calibrationLastSample = null;
+            this.calibrationLastSampleAt = 0;
             throw error;
         }
     }
 
     stop() {
         this.isMonitoring = false;
+        this.loopToken += 1;
+        if (this.rafId !== null) {
+            cancelAnimationFrame(this.rafId);
+            this.rafId = null;
+        }
+        this.isFrameInFlight = false;
         this.cameraAdapter.stop();
+        this.mediaPipeAdapter.resetTracking?.();
         this.view.updateStatus("status.stopped", "gray");
         this.badPostureStartTime = null;
         this.shouldCaptureBaseline = false;
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
+        this.calibrationLastSample = null;
+        this.calibrationLastSampleAt = 0;
         this.lastFrameTime = 0;
         this.lastVisualAlertAt = 0;
         this.noUserStatusShown = false;
@@ -94,22 +118,30 @@ export class MonitorService {
         }
     }
 
-    async loop() {
-        if (!this.isMonitoring) return;
+    async loop(loopToken) {
+        if (!this.isMonitoring || loopToken !== this.loopToken) return;
 
         // Send video frame to MediaPipe on each animation tick.
-        requestAnimationFrame(async () => {
+        this.rafId = requestAnimationFrame(async () => {
+            if (!this.isMonitoring || loopToken !== this.loopToken) return;
+
             const now = Date.now();
-            if (now - this.lastFrameTime >= MONITORING_CONFIG.FRAME_INTERVAL) {
+            if (
+                now - this.lastFrameTime >= MONITORING_CONFIG.FRAME_INTERVAL &&
+                !this.isFrameInFlight
+            ) {
+                this.isFrameInFlight = true;
                 try {
                     await this.mediaPipeAdapter.send(this.cameraAdapter.videoElement);
-                    this.lastFrameTime = now;
+                    this.lastFrameTime = Date.now();
                 } catch (error) {
                     // Keep the monitoring loop alive even if one frame fails.
                     console.error("Pose processing failed:", error);
+                } finally {
+                    this.isFrameInFlight = false;
                 }
             }
-            this.loop();
+            this.loop(loopToken);
         });
     }
 
@@ -118,6 +150,8 @@ export class MonitorService {
         this.shouldCaptureBaseline = true;
         this.calibrationStartTime = null;
         this.lastCalibrationProgress = -1;
+        this.calibrationLastSample = null;
+        this.calibrationLastSampleAt = 0;
         this.view.updateStatus("status.calibrating", "blue");
         this.view.updateCalibrationProgress?.(
             0,
@@ -134,12 +168,21 @@ export class MonitorService {
                 this.noUserStatusShown = true;
             }
             if (this.shouldCaptureBaseline) {
-                this.calibrationStartTime = null;
-                this.lastCalibrationProgress = -1;
-                this.view.updateCalibrationProgress?.(
-                    0,
-                    "calibration.noUserKeepShoulders"
+                const now = Date.now();
+                const hasRecentSample = Boolean(
+                    this.calibrationLastSample &&
+                    now - this.calibrationLastSampleAt <= CALIBRATION_SAMPLE_GRACE_MS
                 );
+                if (!hasRecentSample) {
+                    this.calibrationStartTime = null;
+                    this.lastCalibrationProgress = -1;
+                    this.calibrationLastSample = null;
+                    this.calibrationLastSampleAt = 0;
+                    this.view.updateCalibrationProgress?.(
+                        0,
+                        "calibration.noUserKeepShoulders"
+                    );
+                }
             }
             this.badPostureStartTime = null;
             this.lastVisualAlertAt = 0;
@@ -157,24 +200,35 @@ export class MonitorService {
         const currentPosture = new Posture(landmarks);
 
         if (this.shouldCaptureBaseline) {
+            const now = Date.now();
             const sample = currentPosture.getSample();
             if (!sample) {
-                this.calibrationStartTime = null;
-                this.lastCalibrationProgress = -1;
-                this.view.updateStatus("status.calibrating", "blue");
-                this.view.updateCalibrationProgress?.(
-                    0,
-                    "calibration.keepFullFaceShoulders"
+                const hasRecentSample = Boolean(
+                    this.calibrationLastSample &&
+                    now - this.calibrationLastSampleAt <= CALIBRATION_SAMPLE_GRACE_MS
                 );
+                if (!hasRecentSample) {
+                    this.calibrationStartTime = null;
+                    this.lastCalibrationProgress = -1;
+                    this.calibrationLastSample = null;
+                    this.calibrationLastSampleAt = 0;
+                    this.view.updateStatus("status.calibrating", "blue");
+                    this.view.updateCalibrationProgress?.(
+                        0,
+                        "calibration.keepFullFaceShoulders"
+                    );
+                }
                 this.view.render(null, null);
                 return;
             }
 
+            this.calibrationLastSample = sample;
+            this.calibrationLastSampleAt = now;
             if (!this.calibrationStartTime) {
-                this.calibrationStartTime = Date.now();
+                this.calibrationStartTime = now;
             }
 
-            const elapsed = Date.now() - this.calibrationStartTime;
+            const elapsed = now - this.calibrationStartTime;
             const progress = Math.min(
                 100,
                 Math.round((elapsed / CALIBRATION_DURATION_MS) * 100)
@@ -197,9 +251,11 @@ export class MonitorService {
                 return;
             }
 
-            const updated = this.evaluator.updateBaseline(sample);
+            const updated = this.evaluator.updateBaseline(this.calibrationLastSample);
             this.calibrationStartTime = null;
             this.lastCalibrationProgress = -1;
+            this.calibrationLastSample = null;
+            this.calibrationLastSampleAt = 0;
 
             if (updated) {
                 this.shouldCaptureBaseline = false;

@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.0.10 (2026-03-02)
+
+### Added
+- Add desktop in-app language setting (`ko`/`en`) with immediate UI switching and persisted preference.
+- Add shared locale modules for desktop renderer/main processes to remove hard-coded translation blocks.
+
+### Changed
+- Improve default locale detection using preferred system/browser language lists with fallback handling.
+- Update web landing hero copy to `실시간 자세 모니터링 알림` / `Real-time posture monitoring alerts`.
+
+### Fixed
+- Prevent calibration from getting stuck after stopping and restarting monitoring by hardening camera/loop restart flow and calibration sample handling.
+
 ## v1.0.9 (2026-02-23)
 
 ### Added

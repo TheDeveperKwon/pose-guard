@@ -35,6 +35,10 @@ export class MediaPipeAdapter {
         this.primaryAnchor = null;
     }
 
+    resetTracking() {
+        this.primaryAnchor = null;
+    }
+
     setCallback(callback) {
         this.onResultsCallback = callback;
     }

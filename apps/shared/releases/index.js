@@ -1,5 +1,15 @@
 export const RELEASES = [
   {
+    version: "v1.0.10",
+    date: "2026-03-02",
+    items: [
+      "Add desktop language settings for Korean/English with immediate UI switching and persisted preference.",
+      "Refactor desktop i18n into shared locale modules for renderer/main to remove hard-coded translation blocks.",
+      "Update web landing hero copy to emphasize real-time posture monitoring alerts.",
+      "Fix calibration stall after monitor stop/restart by stabilizing camera restart, monitor loop lifecycle, and calibration sample handling."
+    ]
+  },
+  {
     version: "v1.0.9",
     date: "2026-02-23",
     items: [
