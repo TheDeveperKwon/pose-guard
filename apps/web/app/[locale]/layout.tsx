@@ -19,7 +19,15 @@ export default function LocaleLayout({
       <SiteHeader locale={locale} />
       <div className="page-wrap">
         {children}
-        <footer>{copy.footer}</footer>
+        <footer>
+          <p>{copy.footer}</p>
+          <p className="footer-contact">
+            Contact:{" "}
+            <a href="mailto:contact.poseguard@gmail.com" className="footer-contact-link">
+              contact.poseguard@gmail.com
+            </a>
+          </p>
+        </footer>
       </div>
     </>
   );
