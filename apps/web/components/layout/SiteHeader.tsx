@@ -46,7 +46,9 @@ export function SiteHeader({ locale }: Props) {
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <div className="brand">{copy.brand}</div>
+        <Link href={`/${locale}`} className="brand" aria-label={copy.nav.home}>
+          {copy.brand}
+        </Link>
         <div className="nav-wrap">
           <nav className="nav">
             {navItems.map((item) => {
