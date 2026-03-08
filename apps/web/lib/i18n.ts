@@ -80,7 +80,7 @@ const ko: Copy = {
   nav: {
     home: "홈",
     demo: "데모",
-    download: "다운로드",
+    download: "무료 다운로드",
     howItWorks: "작동 원리",
     faq: "FAQ",
     qna: "Q&A",
@@ -91,7 +91,7 @@ const ko: Copy = {
     title: "실시간 자세 모니터링 알림",
     subtitle:
       "PoseGuard는 실시간 자세 분석을 통해 거북목/구부정/텍스트넥을 감지하고 집중 흐름을 방해하지 않도록 조용하게 알려줍니다.",
-    ctaDownload: "앱 다운로드",
+    ctaDownload: "무료 다운로드",
     ctaDemo: "웹 데모 시작"
   },
   sections: {
@@ -127,8 +127,9 @@ const ko: Copy = {
         body: "거북목/구부정/텍스트넥 지표를 확인하고 민감도와 볼륨을 조절합니다."
       }
     ],
-    quickDownloadTitle: "바로 시작하기",
-    quickDownloadBody: "설치 후 바로 실행할 수 있도록, 아래에는 데스크톱 앱 사용에 필요한 핵심 안내만 담았습니다.",
+    quickDownloadTitle: "무료로 바로 시작하기",
+    quickDownloadBody:
+      "설치 후 바로 실행할 수 있도록, 아래에는 데스크톱 앱을 무료로 시작하는 데 필요한 핵심 안내만 담았습니다.",
     privacyTitle: "프라이버시 우선",
     privacyBody:
       "웹 데모는 브라우저에서 처리되며, 영상 업로드 없이 로컬에서 분석됩니다.",
@@ -158,10 +159,10 @@ const ko: Copy = {
       body: "브라우저 카메라 권한을 허용하면 자세 추정이 시작됩니다."
     },
     download: {
-      title: "다운로드",
-      body: "아래 버튼에서 OS별 설치 파일을 받으세요.",
-      mac: "macOS 다운로드",
-      win: "Windows 다운로드",
+      title: "무료 다운로드",
+      body: "아래 버튼에서 OS별 설치 파일을 무료로 받으세요.",
+      mac: "macOS 무료 다운로드",
+      win: "Windows 무료 다운로드",
       meta: {
         title: "배포 메타데이터",
         versionLabel: "버전",
@@ -230,7 +231,7 @@ const en: Copy = {
   nav: {
     home: "Home",
     demo: "Demo",
-    download: "Download",
+    download: "Free Download",
     howItWorks: "How It Works",
     faq: "FAQ",
     qna: "Q&A",
@@ -241,7 +242,7 @@ const en: Copy = {
     title: "Real-time posture monitoring alerts",
     subtitle:
       "PoseGuard detects turtle neck, slouching, and text neck in real time, then alerts quietly without breaking your focus.",
-    ctaDownload: "Download App",
+    ctaDownload: "Free Download",
     ctaDemo: "Try Web Demo"
   },
   sections: {
@@ -277,8 +278,9 @@ const en: Copy = {
         body: "Watch turtle/slouch/text-neck indicators and adjust sensitivity and volume."
       }
     ],
-    quickDownloadTitle: "Get started in under a minute",
-    quickDownloadBody: "This section keeps only the essentials you need to run the desktop app right away.",
+    quickDownloadTitle: "Start free in under a minute",
+    quickDownloadBody:
+      "This section keeps only the essentials you need to start using the desktop app for free right away.",
     privacyTitle: "Privacy first",
     privacyBody:
       "The web demo runs in the browser. No video upload is required for analysis.",
@@ -308,10 +310,10 @@ const en: Copy = {
       body: "Allow camera access in your browser to start real-time estimation."
     },
     download: {
-      title: "Download",
-      body: "Get OS-specific installers from the buttons below.",
-      mac: "Download for macOS",
-      win: "Download for Windows",
+      title: "Free Download",
+      body: "Get free OS-specific installers from the buttons below.",
+      mac: "Free Download for macOS",
+      win: "Free Download for Windows",
       meta: {
         title: "Release metadata",
         versionLabel: "Version",
